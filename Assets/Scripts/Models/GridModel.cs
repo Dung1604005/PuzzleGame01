@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridModel
@@ -7,18 +8,25 @@ public class GridModel
 
     public int[,] Grid => grid;
 
+    private int _row;
+
+    private int _collumn;
+
     public event  Action<Vector2Int, int> OnCellChanged;
 
-    public event Action<Vector2Int> OnLinesCleared;
+    public event Action<List<Vector2Int>> OnLinesCleared;
 
     public void InitGrid(int row, int collumn)
     {
+        _row = row;
+        _collumn = collumn;
         grid = new int[row, collumn];
     }
 
     public void SetCell(Vector2Int pos, int value)
     {
         grid[pos.x,pos.y] = value;
+        OnCellChanged?.Invoke(pos, value);
     }
     public int GetCell(Vector2Int pos )
     {
@@ -43,7 +51,7 @@ public class GridModel
     }
     public void Clear()
     {
-        grid = new int[0,0];
+        grid = new int[_row,_collumn];
     }
 
 

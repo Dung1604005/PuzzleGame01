@@ -50,6 +50,9 @@ public class ScoreModel
         {
             ResetCombo();
         }
+        currentScore += scoreToAdd;
+        highScore = Math.Max(currentScore, highScore);
+        OnScoreUpdated?.Invoke(currentScore,  highScore);
     }
 
     public void ResetCombo()

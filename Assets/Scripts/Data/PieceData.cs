@@ -15,9 +15,9 @@ public class PieceData : ScriptableObject
 
     public Sprite TileSprite => _tileSprite;
 
-    [SerializeField] private Color _pieceColor;
+    [SerializeField] private int _value;
 
-    public Color PieceColor => _pieceColor;
+    public int Value => _value;
 
     [SerializeField] private int _spawnWeight;
 

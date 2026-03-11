@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameStateModel
 {
-    private GameState currentGameState;
+    private GameState currentGameState = GameState.Menu;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -18,6 +18,7 @@ public class GameStateModel
     public void TransitionTo(GameState newGameState)
     {
         currentGameState = newGameState;
+        OnStateChanged?.Invoke(newGameState);
     }
 
 
