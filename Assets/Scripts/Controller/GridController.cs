@@ -1,13 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridController : MonoBehaviour
 {
     private GridModel _gridModel;
 
-    public void Init(GridModel gridModel)
+    private ScoreModel _scoreModel;
+
+    public void Init(GridModel gridModel, ScoreModel scoreModel)
     {
         _gridModel = gridModel;
+        _scoreModel = scoreModel;
     }
+    //Kiem tra xem co the dat khong
     public bool CanPlacePiece(PieceData piece, Vector2Int origin)
     {
         bool canPlace = true;
@@ -24,6 +29,7 @@ public class GridController : MonoBehaviour
         }
         return canPlace;
     }
+    // Tien hanh dat khoi
 
     public bool TryPlacePiece(PieceData piece, Vector2Int origin)
     {
@@ -40,6 +46,27 @@ public class GridController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    // Xoa khoi va tinh diem 
+    public void CheckAndClearMatches()
+    {
+        List<Vector2Int> cellToRemoves = LineClearCalculator.GetCellsToRemove(_gridModel.Grid);
+
+        List<int> fullRows = LineClearCalculator.FindFullRows(_gridModel.Grid);
+
+        List<int> fullCollumn = LineClearCalculator.FindFullCollumn(_gridModel.Grid);
+
+        // Xoa cac cell
+        foreach(Vector2Int posCell in cellToRemoves)
+        {
+            _gridModel.SetCell(posCell, 0);
+        }
+
+        // Cong diem
+        _scoreModel.AddScore(fullCollumn.Count + fullRows.Count,cellToRemoves.Count);
+        // Ban su kien 
+        _gridModel.PublishOnLineCleared(cellToRemoves);
     }
 
 

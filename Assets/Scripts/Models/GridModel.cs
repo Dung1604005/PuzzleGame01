@@ -54,5 +54,10 @@ public class GridModel
         grid = new int[_row,_collumn];
     }
 
+    public void PublishOnLineCleared(List<Vector2Int> vector2Ints)
+    {
+        OnLinesCleared?.Invoke(vector2Ints);
+    }
+
 
 }
