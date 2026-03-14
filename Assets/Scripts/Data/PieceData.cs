@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PieceData", menuName = "Scriptable Objects/PieceData")]
@@ -19,9 +20,20 @@ public class PieceData : ScriptableObject
 
     public int Value => _value;
 
+    [SerializeField] private LevelDifficulty levelPiece;
+
+    public LevelDifficulty LevelPiece =>levelPiece;
+
     [SerializeField] private int _spawnWeight;
 
     public int SpawnWeight => _spawnWeight;
 
 
 }
+[Serializable]
+public enum LevelDifficulty
+    {
+       HARD,
+       NORMAL,
+       EASY 
+    }

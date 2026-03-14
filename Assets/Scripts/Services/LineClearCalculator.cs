@@ -10,33 +10,21 @@ public class LineClearCalculator
         List<int> fullRows = new List<int>();
         for (int posY = 0; posY < row; posY++)
         {
-            // Danh dau lastCell la gia tri cell gan nhat. Ban dau khong co nen la 0
-            int lastCell = 0;
+            
+            bool isFull = true;
             for (int posX = 0; posX < collumn; posX++)
             {
                 // Gap cell rong thi stop
-                // Neu lastCell khac rong ma current cell != lastCell thi dong nay khong tinh => bo
-                // Neu currentCell == lastCell thi tiep tuc
+               
                 if (grid[posY, posX] == 0)
                 {
 
-                    lastCell = 0;
+                    isFull = false;
                     break;
                 }
-                else
-                {
-                    if (lastCell == 0)
-                    {
-                        lastCell = grid[posY, posX];
-                    }
-                    else if (lastCell != grid[posY, posX])
-                    {
-                        lastCell = 0;
-                        break;
-                    }
-                }
+                
             }
-            if (lastCell > 0)
+            if (isFull)
             {
                 fullRows.Add(posY);
             }
@@ -51,28 +39,17 @@ public class LineClearCalculator
         // Tuong tu logic voi row
         for (int posX = 0; posX < collumn; posX++)
         {
-            int lastCell = 0;
+            bool isFull = true;
             for (int posY = 0; posY < row; posY++)
             {
                 if (grid[posY, posX] == 0)
                 {
-                    lastCell = 0;
+                    isFull = false;
                     break;
                 }
-                else
-                {
-                    if (lastCell == 0)
-                    {
-                        lastCell = grid[posY, posX];
-                    }
-                    else if (lastCell != grid[posY, posX])
-                    {
-                        lastCell = 0;
-                        break;
-                    }
-                }
+                
             }
-            if (lastCell > 0)
+            if (isFull)
             {
                 fullCollumn.Add(posX);
             }

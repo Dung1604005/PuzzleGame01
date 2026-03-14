@@ -10,7 +10,11 @@ public class GridModel
 
     private int _row;
 
+    public int Row => _row;
+
     private int _collumn;
+
+    public int Collumn => _collumn;
 
     public event  Action<Vector2Int, int> OnCellChanged;
 

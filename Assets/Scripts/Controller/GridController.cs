@@ -5,6 +5,8 @@ public class GridController : MonoBehaviour
 {
     private GridModel _gridModel;
 
+    public GridModel GridModel => _gridModel;
+
     private ScoreModel _scoreModel;
 
     public void Init(GridModel gridModel, ScoreModel scoreModel)
@@ -21,13 +23,29 @@ public class GridController : MonoBehaviour
         {
             Vector2Int placePosition = origin + offSet;
             // Kiem tra xem co rong + hop le khong
-            if (!_gridModel.IsEmpty(placePosition) || !_gridModel.IsInBound(placePosition))
+            if (!_gridModel.IsInBound(placePosition)||!_gridModel.IsEmpty(placePosition) )
             {
                 canPlace = false;
                 break;
             }
         }
         return canPlace;
+    }
+
+    public bool CanPlacePieceAnyWhere(PieceData piece)
+    {
+        
+        for(int i = 0; i < _gridModel.Row; i++)
+        {
+            for(int j =0; j < _gridModel.Collumn; j++)
+            {
+                if(CanPlacePiece(piece, new Vector2Int(i, j)))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     // Tien hanh dat khoi
 
