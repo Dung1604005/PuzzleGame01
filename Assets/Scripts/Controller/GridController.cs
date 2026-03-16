@@ -87,7 +87,13 @@ public class GridController : MonoBehaviour
         // Cong diem
         _scoreModel.AddScore(fullCollumn.Count + fullRows.Count,cellToRemoves.Count);
         // Ban su kien 
-        _gridModel.PublishOnLineCleared(cellToRemoves);
+        EventBus.Instance.Publish(
+            new OnCellCleared
+            {
+                position = cellToRemoves
+            }
+        );
+       
     }
 
     public bool IsGameOver()

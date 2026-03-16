@@ -16,9 +16,6 @@ public class GridModel
 
     public int Collumn => _collumn;
 
-    public event  Action<Vector2Int, int> OnCellChanged;
-
-    public event Action<List<Vector2Int>> OnLinesCleared;
 
     public void InitGrid(int row, int collumn)
     {
@@ -30,7 +27,11 @@ public class GridModel
     public void SetCell(Vector2Int pos, int value)
     {
         grid[pos.x,pos.y] = value;
-        OnCellChanged?.Invoke(pos, value);
+        EventBus.Instance.Publish(new OnCellChanged
+        {
+            position = pos, newValue = value
+        });
+        
     }
     public int GetCell(Vector2Int pos )
     {
@@ -58,10 +59,7 @@ public class GridModel
         grid = new int[_row,_collumn];
     }
 
-    public void PublishOnLineCleared(List<Vector2Int> vector2Ints)
-    {
-        OnLinesCleared?.Invoke(vector2Ints);
-    }
+    
 
 
 }

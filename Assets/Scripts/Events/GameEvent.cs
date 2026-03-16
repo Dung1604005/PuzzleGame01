@@ -1,0 +1,31 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public struct OnCellCleared: IEvent
+{
+    public List<Vector2Int> position;
+}
+
+public struct  OnCellChanged: IEvent
+{
+    public Vector2Int position;
+
+    public int newValue;
+}
+
+public struct OnDifficultyChanged: IEvent
+{
+    public LevelDifficulty LevelDifficulty;
+}
+
+public struct OnStateChanged: IEvent
+{
+    public GameState GameState;
+}
+
+public struct OnScoreUpdated: IEvent
+{
+    public int CurrentScore;
+
+    public int HighScore;
+}

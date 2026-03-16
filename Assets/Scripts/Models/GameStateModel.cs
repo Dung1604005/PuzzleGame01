@@ -25,20 +25,29 @@ public class GameStateModel
     public List<PieceData> BagPiece => bagPiece;
 
 
-    public event Action<GameState> OnStateChanged;
+    
 
-    public event Action<LevelDifficulty> OnDifficultyChanged;
+    
 
     public void TransitionTo(GameState newGameState)
     {
         currentGameState = newGameState;
-        OnStateChanged?.Invoke(newGameState);
+        EventBus.Instance.Publish(new OnStateChanged
+        {
+            GameState = newGameState
+        });
+        
     }
 
     public void ChangeDifficulty(LevelDifficulty levelDifficulty)
     {
         currentLevelDifficulty = levelDifficulty;
-        OnDifficultyChanged?.Invoke(levelDifficulty);
+        EventBus.Instance.Publish(new OnDifficultyChanged
+        {
+            LevelDifficulty = levelDifficulty
+        }     
+        );
+        
     }
 
     public void AddPiece(PieceData pieceData)

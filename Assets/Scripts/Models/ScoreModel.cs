@@ -15,8 +15,7 @@ public class ScoreModel
 
     public int ComboCount => comboCount;
 
-    // Event thay doi current score va high score
-    public event Action<int, int> OnScoreUpdated; 
+    
 
     public void AddScore(int lines, int tilesCleared)
     {
@@ -52,14 +51,22 @@ public class ScoreModel
         }
         currentScore += scoreToAdd;
         highScore = Math.Max(currentScore, highScore);
-        OnScoreUpdated?.Invoke(currentScore,  highScore);
+        EventBus.Instance.Publish(new OnScoreUpdated
+        {
+            CurrentScore = currentScore,
+            HighScore = highScore
+        });
     }
 
     public void Reset()
     {
         ResetCombo();
         currentScore = 0;
-        OnScoreUpdated?.Invoke(currentScore,  highScore);
+        EventBus.Instance.Publish(new OnScoreUpdated
+        {
+            CurrentScore = currentScore,
+            HighScore = highScore
+        });
     }
 
     public void ResetCombo()
