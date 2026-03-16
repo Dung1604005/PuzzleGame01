@@ -9,10 +9,13 @@ public class GridController : MonoBehaviour
 
     private ScoreModel _scoreModel;
 
-    public void Init(GridModel gridModel, ScoreModel scoreModel)
+    private GameStateModel _gameStateModel;
+
+    public void Init(GridModel gridModel, ScoreModel scoreModel, GameStateModel gameStateModel)
     {
         _gridModel = gridModel;
         _scoreModel = scoreModel;
+        _gameStateModel = gameStateModel;
     }
     //Kiem tra xem co the dat khong
     public bool CanPlacePiece(PieceData piece, Vector2Int origin)
@@ -87,6 +90,17 @@ public class GridController : MonoBehaviour
         _gridModel.PublishOnLineCleared(cellToRemoves);
     }
 
+    public bool IsGameOver()
+    {
+        foreach(PieceData pieceData in _gameStateModel.AvailablePieces)
+        {
+            if (CanPlacePieceAnyWhere(pieceData))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
 
 

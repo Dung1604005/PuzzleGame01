@@ -96,17 +96,24 @@ public class PieceSpawner
 
     public static void SpawnNewBatch(GameStateModel gameState, GridController gridController, List<PieceData> pool)
     {
+        gameState.ClearBatch();
         // Lay 3 piece
 
         //Lay piece co the dat vao
+        bool findSavePiece = false;
 
         foreach(PieceData pieceData in pool)
         {
             if (gridController.CanPlacePieceAnyWhere(pieceData))
             {
                 gameState.AddPiece(pieceData);
+                findSavePiece = true;
                 break;
             }
+        }
+        if (!findSavePiece)
+        {
+            gameState.AddPiece(PickRandomPiece(pool));
         }
         // Lay random2  piece con lai
 

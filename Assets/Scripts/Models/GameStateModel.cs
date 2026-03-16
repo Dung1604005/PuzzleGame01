@@ -35,7 +35,7 @@ public class GameStateModel
         OnStateChanged?.Invoke(newGameState);
     }
 
-    public void UpgradeDifficulty(LevelDifficulty levelDifficulty)
+    public void ChangeDifficulty(LevelDifficulty levelDifficulty)
     {
         currentLevelDifficulty = levelDifficulty;
         OnDifficultyChanged?.Invoke(levelDifficulty);
@@ -47,8 +47,25 @@ public class GameStateModel
         availablePieces.Add(pieceData);
         RemovePieceFromBag(pieceData);
     }
-    public void ResetBagPiece(List<PieceData> alllPieces, BagComposition bagComposition)
+    public void ClearBatch()
     {
+        availablePieces.Clear();
+    }
+    public void ResetBagPiece(List<PieceData> alllPieces, DifficultyConfig difficultyConfig)
+    {
+        BagComposition bagComposition = difficultyConfig.Level1;
+        if(currentLevelDifficulty == LevelDifficulty.EASY)
+        {
+            bagComposition = difficultyConfig.Level1;
+        }
+        else if(currentLevelDifficulty == LevelDifficulty.NORMAL)
+        {
+            bagComposition = difficultyConfig.Level2;
+        }
+        else
+        {
+            bagComposition = difficultyConfig.Level3;
+        }
         bagPiece = PieceSpawner.PickBagOfPiece(alllPieces, currentLevelDifficulty, bagComposition);
     }
     public void RemovePieceFromBag(PieceData pieceData)

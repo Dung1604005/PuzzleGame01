@@ -55,6 +55,13 @@ public class ScoreModel
         OnScoreUpdated?.Invoke(currentScore,  highScore);
     }
 
+    public void Reset()
+    {
+        ResetCombo();
+        currentScore = 0;
+        OnScoreUpdated?.Invoke(currentScore,  highScore);
+    }
+
     public void ResetCombo()
     {
         comboCount = 0;
