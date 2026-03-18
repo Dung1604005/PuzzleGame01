@@ -4,6 +4,10 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     [Header("REFERENCES")]
+
+    [SerializeField] private GridConfig _gridConfig;
+
+    public GridConfig GridConfig => _gridConfig;
     private GridModel _gridModel;
     public GridModel GridModel => _gridModel;
 
@@ -59,6 +63,9 @@ public class GameManager : Singleton<GameManager>
             GameOver();
         }
     } // Sau khi đặt: CheckClear → check GameOver → spawn mới
+
+    
+    
 
 
 }
