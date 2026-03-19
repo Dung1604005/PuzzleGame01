@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 835236599e7b48f429861463a616f30d, type: 3}
-  m_Name: L_Shape
+  m_Name: I_4x1
   m_EditorClassIdentifier: Assembly-CSharp::PieceData
-  _pieceID: 
+  _pieceID: Line_4x1_Horiz
   _cellOffsets:
   - {x: 0, y: 0}
-  - {x: 0, y: 1}
   - {x: 1, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
   _tileSprite: {fileID: 7482667652216324306, guid: 106f12595b2c8ec4ab40816847781fe6, type: 3}
-  _pieceColor: {r: 1, g: 1, b: 1, a: 1}
-  _spawnWeight: 0
+  _value: 9
+  levelPiece: 1
+  _spawnWeight: 50

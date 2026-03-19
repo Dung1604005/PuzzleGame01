@@ -21,6 +21,8 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private GridController _gridController;
 
+    public GridController GridController => _gridController;
+
 
 
     [Header("Data")]
@@ -38,6 +40,10 @@ public class GameManager : Singleton<GameManager>
         _gameStateModel.TransitionTo(GameState.Playing);
 
         _gridController.Init(_gridModel, _scoreModel, _gameStateModel);
+
+        _gameStateModel.ResetBagPiece(pieceDatas, difficultyConfig);
+        
+        PieceSpawner.SpawnNewBatch(_gameStateModel, _gridController, _gameStateModel.BagPiece);
     }
 
     public void GameOver()
@@ -63,6 +69,12 @@ public class GameManager : Singleton<GameManager>
             GameOver();
         }
     } // Sau khi đặt: CheckClear → check GameOver → spawn mới
+
+
+    void Start()
+    {
+        StartGame();
+    }
 
     
     

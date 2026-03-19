@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 835236599e7b48f429861463a616f30d, type: 3}
   m_Name: I_1x2
   m_EditorClassIdentifier: Assembly-CSharp::PieceData
-  _pieceID: 
+  _pieceID: Line_1x2_Vert
   _cellOffsets:
   - {x: 0, y: 0}
   - {x: 0, y: 1}
   _tileSprite: {fileID: 7482667652216324306, guid: 106f12595b2c8ec4ab40816847781fe6, type: 3}
-  _pieceColor: {r: 1, g: 1, b: 1, a: 1}
-  _spawnWeight: 0
+  _value: 2
+  levelPiece: 2
+  _spawnWeight: 80

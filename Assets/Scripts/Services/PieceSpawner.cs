@@ -106,19 +106,19 @@ public class PieceSpawner
         {
             if (gridController.CanPlacePieceAnyWhere(pieceData))
             {
-                gameState.AddPiece(pieceData);
+                gameState.AddPieceToBatch(pieceData);
                 findSavePiece = true;
                 break;
             }
         }
         if (!findSavePiece)
         {
-            gameState.AddPiece(PickRandomPiece(pool));
+            gameState.AddPieceToBatch(PickRandomPiece(pool));
         }
         // Lay random2  piece con lai
 
-        gameState.AddPiece(PickRandomPiece(pool));
-        gameState.AddPiece(PickRandomPiece(pool));
+        gameState.AddPieceToBatch(PickRandomPiece(pool));
+        gameState.AddPieceToBatch(PickRandomPiece(pool));
 
         Debug.Log("SUCCEED CREATE BATCH PIECE");
         

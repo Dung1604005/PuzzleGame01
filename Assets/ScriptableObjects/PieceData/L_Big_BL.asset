@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 835236599e7b48f429861463a616f30d, type: 3}
-  m_Name: I_1x3
+  m_Name: L_Big_BL
   m_EditorClassIdentifier: Assembly-CSharp::PieceData
-  _pieceID: Line_1x3_Vert
+  _pieceID: L_Big_BL
   _cellOffsets:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
   - {x: 0, y: 1}
+  - {x: 2, y: 0}
   - {x: 0, y: 2}
   _tileSprite: {fileID: 7482667652216324306, guid: 106f12595b2c8ec4ab40816847781fe6, type: 3}
-  _value: 4
-  levelPiece: 1
-  _spawnWeight: 60
+  _value: 16
+  levelPiece: 0
+  _spawnWeight: 25

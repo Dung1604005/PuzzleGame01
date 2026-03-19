@@ -54,7 +54,7 @@ public class InputHandler : MonoBehaviour
             pos = GetWorldPositionWithOffset()
         });
 
-        Debug.Log(GridCoordinateConverter.WorldToGrid(GetWorldPositionWithOffset(), GameManager.Instance.GridConfig ));
+        
 
 
     }
@@ -66,6 +66,8 @@ public class InputHandler : MonoBehaviour
         {
             pos = GetWorldPositionWithOffset()
         });
+
+       
 
     }
 

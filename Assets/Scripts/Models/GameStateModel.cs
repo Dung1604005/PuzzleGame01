@@ -50,12 +50,16 @@ public class GameStateModel
         
     }
 
-    public void AddPiece(PieceData pieceData)
+    public void AddPieceToBatch(PieceData pieceData)
     {
 
         availablePieces.Add(pieceData);
         RemovePieceFromBag(pieceData);
     }
+
+    
+
+
     public void ClearBatch()
     {
         availablePieces.Clear();

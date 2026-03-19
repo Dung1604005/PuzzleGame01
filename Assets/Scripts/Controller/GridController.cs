@@ -25,8 +25,18 @@ public class GridController : MonoBehaviour
         foreach (Vector2Int offSet in piece.CellOffsets)
         {
             Vector2Int placePosition = origin + offSet;
+            
+            if(_gridModel == null)
+            {
+                Debug.LogError("GRID MODEL IS NOT INITED!");
+            }
             // Kiem tra xem co rong + hop le khong
-            if (!_gridModel.IsInBound(placePosition)||!_gridModel.IsEmpty(placePosition) )
+            if (!_gridModel.IsInBound(placePosition))
+            {
+                canPlace = false;
+                break;
+            }
+            else if(!_gridModel.IsEmpty(placePosition))
             {
                 canPlace = false;
                 break;

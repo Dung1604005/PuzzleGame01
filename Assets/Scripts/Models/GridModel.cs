@@ -48,7 +48,7 @@ public class GridModel
         {
             return false;
         }
-        if(pos.y < 0 || pos.y >=grid.GetLength(1))
+        if(pos.y < 0 || pos.y >= grid.GetLength(1))
         {
             return false;
         }
