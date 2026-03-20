@@ -101,6 +101,7 @@ public class PieceSpawner
 
         //Lay piece co the dat vao
         bool findSavePiece = false;
+        List<PieceData> pieceDatas = new List<PieceData>();
 
         foreach(PieceData pieceData in pool)
         {
@@ -108,17 +109,31 @@ public class PieceSpawner
             {
                 gameState.AddPieceToBatch(pieceData);
                 findSavePiece = true;
+                pieceDatas.Add(pieceData);
                 break;
             }
         }
         if (!findSavePiece)
         {
-            gameState.AddPieceToBatch(PickRandomPiece(pool));
+            PieceData randomPiece = PickRandomPiece(pool);
+            pieceDatas.Add(randomPiece);
+            gameState.AddPieceToBatch(randomPiece);
         }
-        // Lay random2  piece con lai
 
-        gameState.AddPieceToBatch(PickRandomPiece(pool));
-        gameState.AddPieceToBatch(PickRandomPiece(pool));
+        // Lay random2  piece con lai
+        PieceData randomPiece2 = PickRandomPiece(pool);
+        pieceDatas.Add(randomPiece2);
+        gameState.AddPieceToBatch(randomPiece2);
+        PieceData randomPiece3 = PickRandomPiece(pool);
+        pieceDatas.Add(randomPiece3);
+        gameState.AddPieceToBatch(randomPiece3);
+
+        EventBus.Instance.Publish(new OnBatchChanged
+        {
+            FirstPiece = pieceDatas[0],
+            SecondPiece = pieceDatas[1],
+            ThirdPiece = pieceDatas[2]
+        });
 
         Debug.Log("SUCCEED CREATE BATCH PIECE");
         

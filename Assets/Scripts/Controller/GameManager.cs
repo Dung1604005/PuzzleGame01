@@ -29,7 +29,23 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private List<PieceData> pieceDatas;
 
+    public List<PieceData> PieceDatas => pieceDatas;
+
     [SerializeField] private DifficultyConfig difficultyConfig;
+
+    public DifficultyConfig DifficultyConfig => difficultyConfig;
+
+    [SerializeField] private ThemeData themeData;
+
+    public ThemeData ThemeData => themeData;
+
+    [SerializeField] private GameObject blockPrefab;
+
+    public GameObject BlockPrefab => blockPrefab;
+
+    
+
+    
 
     public void StartGame()
     {
@@ -70,6 +86,7 @@ public class GameManager : Singleton<GameManager>
         }
     } // Sau khi đặt: CheckClear → check GameOver → spawn mới
 
+    
 
     void Start()
     {

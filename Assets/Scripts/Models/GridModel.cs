@@ -24,12 +24,12 @@ public class GridModel
         grid = new int[row, collumn];
     }
 
-    public void SetCell(Vector2Int pos, int value)
+    public void SetCell(Vector2Int pos, int value, Sprite sprite)
     {
         grid[pos.x,pos.y] = value;
         EventBus.Instance.Publish(new OnCellChanged
         {
-            position = pos, newValue = value
+            position = pos, newValue = value, newSprite = sprite
         });
         
     }

@@ -12,10 +12,6 @@ public class PieceData : ScriptableObject
 
     public Vector2Int[] CellOffsets => _cellOffsets;
 
-    [SerializeField] private Sprite _tileSprite;
-
-    public Sprite TileSprite => _tileSprite;
-
     [SerializeField] private int _value;
 
     public int Value => _value;

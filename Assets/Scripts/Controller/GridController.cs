@@ -62,14 +62,14 @@ public class GridController : MonoBehaviour
     }
     // Tien hanh dat khoi
 
-    public bool TryPlacePiece(PieceData piece, Vector2Int origin)
+    public bool TryPlacePiece(PieceData piece, Vector2Int origin, Sprite sprite)
     {
         if (CanPlacePiece(piece, origin))
         {
             foreach (Vector2Int offSet in piece.CellOffsets)
             {
                 Vector2Int placePosition = origin + offSet;
-                _gridModel.SetCell(placePosition, piece.Value);
+                _gridModel.SetCell(placePosition, piece.Value, sprite);
             }
             return true;
         }
@@ -91,14 +91,14 @@ public class GridController : MonoBehaviour
         // Xoa cac cell
         foreach(Vector2Int posCell in cellToRemoves)
         {
-            _gridModel.SetCell(posCell, 0);
+            _gridModel.SetCell(posCell, 0, GameManager.Instance.ThemeData.GridSprite);
         }
 
         // Cong diem
         _scoreModel.AddScore(fullCollumn.Count + fullRows.Count,cellToRemoves.Count);
         // Ban su kien 
         EventBus.Instance.Publish(
-            new OnCellCleared
+            new OnLineCleared
             {
                 position = cellToRemoves
             }
@@ -108,7 +108,7 @@ public class GridController : MonoBehaviour
 
     public bool IsGameOver()
     {
-        foreach(PieceData pieceData in _gameStateModel.AvailablePieces)
+        foreach(PieceData pieceData in _gameStateModel.BatchPieces)
         {
             if (CanPlacePieceAnyWhere(pieceData))
             {

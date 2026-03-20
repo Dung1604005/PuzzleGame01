@@ -16,18 +16,18 @@ public class GameStateModel
 
     [Header("PIECE")]
 
-    private List<PieceData> availablePieces = new List<PieceData>();
+    private List<PieceData> batchPieces = new List<PieceData>();
 
-    public List<PieceData> AvailablePieces => availablePieces;
+    public List<PieceData> BatchPieces => batchPieces;
 
     private List<PieceData> bagPiece = new List<PieceData>();
 
     public List<PieceData> BagPiece => bagPiece;
 
 
-    
 
-    
+
+
 
     public void TransitionTo(GameState newGameState)
     {
@@ -36,7 +36,7 @@ public class GameStateModel
         {
             GameState = newGameState
         });
-        
+
     }
 
     public void ChangeDifficulty(LevelDifficulty levelDifficulty)
@@ -45,33 +45,56 @@ public class GameStateModel
         EventBus.Instance.Publish(new OnDifficultyChanged
         {
             LevelDifficulty = levelDifficulty
-        }     
+        }
         );
-        
+
     }
 
     public void AddPieceToBatch(PieceData pieceData)
     {
 
-        availablePieces.Add(pieceData);
+        batchPieces.Add(pieceData);
         RemovePieceFromBag(pieceData);
     }
 
-    
+    public void RemovePieceFromBatch(int index)
+    {
+        if (index < 0 || index >= 3)
+        {
+            Debug.Log("INDEX IS OUT OF BOUND OF BATCH");
+            return;
+        }
 
+        batchPieces[index] = null;
+        bool isBatchEmpty = true;
+        for (int i = 0; i < 3; i++)
+        {
+            if (batchPieces[i] != null)
+            {
+                isBatchEmpty = false;
+                break;
+            }
+        }
 
+        if (isBatchEmpty)
+        {
+            batchPieces.Clear();
+            PieceSpawner.SpawnNewBatch(this, GameManager.Instance.GridController, bagPiece);
+        }
+
+    }
     public void ClearBatch()
     {
-        availablePieces.Clear();
+        batchPieces.Clear();
     }
     public void ResetBagPiece(List<PieceData> alllPieces, DifficultyConfig difficultyConfig)
     {
         BagComposition bagComposition = difficultyConfig.Level1;
-        if(currentLevelDifficulty == LevelDifficulty.EASY)
+        if (currentLevelDifficulty == LevelDifficulty.EASY)
         {
             bagComposition = difficultyConfig.Level1;
         }
-        else if(currentLevelDifficulty == LevelDifficulty.NORMAL)
+        else if (currentLevelDifficulty == LevelDifficulty.NORMAL)
         {
             bagComposition = difficultyConfig.Level2;
         }
@@ -85,13 +108,17 @@ public class GameStateModel
     {
         int index = bagPiece.FindIndex(p => p.PieceID == pieceData.PieceID);
 
-        if (index != -1) 
+        if (index != -1)
         {
-            
+
             Debug.Log($"PIECE {pieceData.PieceID} has been removed from bag");
 
-            
+
             bagPiece.RemoveAt(index);
+            if(bagPiece.Count == 0)
+            {
+                ResetBagPiece(GameManager.Instance.PieceDatas, GameManager.Instance.DifficultyConfig);
+            }
         }
         else
         {

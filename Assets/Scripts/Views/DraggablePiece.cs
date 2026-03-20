@@ -4,15 +4,20 @@ using UnityEngine.EventSystems;
 
 public class DraggablePiece : MonoBehaviour
 {
+    private int indexBatch;
 
     [SerializeField] private float radInteract;
+
+    private Vector2 pivot;
+
+
     [SerializeField] private PieceData _myPieceData ;
     public PieceData MyPieceData => _myPieceData;
     private Vector3 _originalPosition;
 
     public Vector3 OriginalPosition => _originalPosition;
 
-    [SerializeField] private SpriteRenderer visual;
+    [SerializeField] private PieceRenderer pieceRenderer;
 
     
 
@@ -20,12 +25,32 @@ public class DraggablePiece : MonoBehaviour
 
     void Awake()
     {
+        pieceRenderer = GetComponent<PieceRenderer>();
         _originalPosition = transform.position;
     }
 
-    public void Setup(PieceData data)
+    public void SetRadInteract(float _radInteract)
     {
+        radInteract = _radInteract;
+    }
+
+    public void SetPivot(float x, float y)
+    {
+        pivot.x = x;
+        pivot.y = y;
+    }
+
+    public void Setup(PieceData data, int _index)
+    {
+        indexBatch = _index;
+        pieceRenderer.ClearVisual();
         _myPieceData  = data;
+        if(data == null)
+        {
+            return;
+        }
+        pieceRenderer.RenderPiece(data);
+        transform.DOScale(0.7f, 0.2f);
     }
 
     void OnEnable()
@@ -43,11 +68,12 @@ public class DraggablePiece : MonoBehaviour
     }
     public void OnBeginDrag(OnDragStart onDragStart)
     {
-        if((onDragStart.pos - (Vector2)transform.position).sqrMagnitude <= radInteract*radInteract)
+        
+        if((onDragStart.pos - ((Vector2)transform.position + pivot)).sqrMagnitude <= radInteract*radInteract)
         {
             transform.position = onDragStart.pos;
             isDragging = true;
-            transform.DOScale(1.2f, 0.1f);
+            transform.DOScale(1f, 0.1f);
         }
     }
 
@@ -55,7 +81,7 @@ public class DraggablePiece : MonoBehaviour
     {
         if (isDragging)
         {
-            transform.DOMove(onDragUpdate.pos, 0.1f);
+            transform.position = new Vector3(onDragUpdate.pos.x, onDragUpdate.pos.y, 0f);
         }
     }
 
@@ -63,17 +89,33 @@ public class DraggablePiece : MonoBehaviour
     {
         if (isDragging)
         {
-            if( GameManager.Instance.GridController.TryPlacePiece(MyPieceData, GridCoordinateConverter.WorldToGrid(onDragEnd.pos)))
+            isDragging = false;
+            if( GameManager.Instance.GridController.TryPlacePiece(MyPieceData, GridCoordinateConverter.WorldToGrid(onDragEnd.pos), pieceRenderer.SpriteBlock))
             {
+                pieceRenderer.ClearVisual();
                 transform.DOScale(0, 0.2f).OnComplete(() =>
                 {
-                    this.gameObject.SetActive(false);
+                    
+                    transform.DOMove(_originalPosition, 0f).OnComplete(() =>
+                    {
+                        
+                        GameManager.Instance.GameStateModel.RemovePieceFromBatch(indexBatch);
+                        
+                    });
+                    
+                    
+                    
                 });
+                
+                
+                
+                
             }
             else
             {
+                
                 transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
-                transform.DOScale(1f, 0.3f);
+                transform.DOScale(0.7f, 0.3f);
             }
             
         }

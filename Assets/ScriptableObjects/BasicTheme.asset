@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866c7786b056f24c89a81ccfd434d4c, type: 3}
+  m_Name: BasicTheme
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeData
+  ThemeName: Basic
+  BlockSprites:
+  - {fileID: 5131012411374403324, guid: b2dd705a047451e4d94865160ed2b8af, type: 3}
+  - {fileID: -5062196652582300369, guid: e704def02bb19ba4186248c087a258ac, type: 3}
+  - {fileID: 6626369496130969526, guid: 211c85af2496f19419a66dd6ef25e90a, type: 3}
+  - {fileID: -1536914372969001735, guid: 940c383b75917d14fa3d42d91eaee0a2, type: 3}
+  - {fileID: 3356406395973183004, guid: a865645c51204df439562a6c1fc56461, type: 3}
+  - {fileID: 3685237101826841866, guid: e48cbe1b9bddae34980cb8d73e9005db, type: 3}
+  - {fileID: -4027971289221615466, guid: c605f5db7f592c14db8c126753b36ec9, type: 3}
+  BackgroundImage: {fileID: 0}
+  ThemeMusic: {fileID: 0}
