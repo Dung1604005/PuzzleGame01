@@ -90,6 +90,7 @@ public class PieceRenderer : MonoBehaviour
             gameObject.transform.localPosition = new Vector3(celloffset.x - medX, celloffset.y - medY, 0f);
 
             gameObject.GetComponent<SpriteRenderer>().sprite = spriteBlock;
+            gameObject.GetComponent<SpriteRenderer>().sortingOrder = 5;
         }
 
         SetupHitbox(pieceData);

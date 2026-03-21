@@ -7,6 +7,18 @@ public class BatchController : MonoBehaviour
 
     public List<DraggablePiece> ListPiece => _listPiece;
 
+    [SerializeField] private PieceData _currentHoldingPiece;
+
+    public PieceData CurrentHoldingPiece => _currentHoldingPiece;
+
+    [SerializeField] private Sprite _currentSpritePiece;
+
+    public Sprite CurrentSpritePiece => _currentSpritePiece;
+
+    [SerializeField] private Vector2 _pivotPiece;
+
+    public Vector2 PivotPiece => _pivotPiece;
+
     void OnEnable()
     {
         EventBus.Instance.Subscribe<OnBatchChanged>(SetUpBatch);
@@ -14,6 +26,21 @@ public class BatchController : MonoBehaviour
     void OnDisable()
     {
         EventBus.Instance.UnSubscribe<OnBatchChanged>(SetUpBatch);
+    }
+
+    public void SetPivotPiece(Vector2 pivot)
+    {
+        _pivotPiece = pivot;
+    }
+
+    public void SetCurrentHoldingPiece(PieceData currentHoldingPiece)
+    {
+        _currentHoldingPiece = currentHoldingPiece;
+    }
+
+    public void SetCurrentSpritePiece(Sprite currentSpritePiece)
+    {
+        _currentSpritePiece = currentSpritePiece;
     }
 
 

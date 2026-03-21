@@ -21,5 +21,6 @@ MonoBehaviour:
   - {fileID: 3356406395973183004, guid: a865645c51204df439562a6c1fc56461, type: 3}
   - {fileID: 3685237101826841866, guid: e48cbe1b9bddae34980cb8d73e9005db, type: 3}
   - {fileID: -4027971289221615466, guid: c605f5db7f592c14db8c126753b36ec9, type: 3}
+  GridSprite: {fileID: -6185343655787597505, guid: c6e3f8ef1fe287e478b99520df5d1a21, type: 3}
   BackgroundImage: {fileID: 0}
   ThemeMusic: {fileID: 0}

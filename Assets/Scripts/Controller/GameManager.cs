@@ -43,9 +43,17 @@ public class GameManager : Singleton<GameManager>
 
     public GameObject BlockPrefab => blockPrefab;
 
-    
 
-    
+
+    public void OnEnable()
+    {
+        EventBus.Instance.Subscribe<OnCellChanged>(OnPiecePlaced);
+    }
+
+    public void OnDisable()
+    {
+        EventBus.Instance.UnSubscribe<OnCellChanged>(OnPiecePlaced);
+    }
 
     public void StartGame()
     {
@@ -77,7 +85,7 @@ public class GameManager : Singleton<GameManager>
         _scoreModel.Reset();
     
     }
-    public void OnPiecePlaced()
+    public void OnPiecePlaced(OnCellChanged onCellChanged)
     {
         _gridController.CheckAndClearMatches();
         if (_gridController.IsGameOver())

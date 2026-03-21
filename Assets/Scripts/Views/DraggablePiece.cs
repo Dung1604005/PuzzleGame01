@@ -71,9 +71,18 @@ public class DraggablePiece : MonoBehaviour
         
         if((onDragStart.pos - ((Vector2)transform.position + pivot)).sqrMagnitude <= radInteract*radInteract)
         {
+            // Safety check - ensure piece data is valid before starting drag
+            if (_myPieceData == null)
+            {
+                Debug.LogWarning("Cannot begin drag - piece data is null");
+                return;
+            }
+            
             transform.position = onDragStart.pos;
             isDragging = true;
             transform.DOScale(1f, 0.1f);
+            this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(_myPieceData);
+            this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(pieceRenderer.SpriteBlock);
         }
     }
 
@@ -90,33 +99,37 @@ public class DraggablePiece : MonoBehaviour
         if (isDragging)
         {
             isDragging = false;
-            if( GameManager.Instance.GridController.TryPlacePiece(MyPieceData, GridCoordinateConverter.WorldToGrid(onDragEnd.pos), pieceRenderer.SpriteBlock))
+            
+            if(_myPieceData == null)
+            {
+                Debug.Log("CURRENT PIECE HOLDING IS NULL");
+                return;
+            }
+            Vector2 placePosition = onDragEnd.pos + pivot;
+            if( GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock))
             {
                 pieceRenderer.ClearVisual();
+                this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
+                this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
                 transform.DOScale(0, 0.2f).OnComplete(() =>
                 {
                     
                     transform.DOMove(_originalPosition, 0f).OnComplete(() =>
-                    {
-                        
+                    {        
                         GameManager.Instance.GameStateModel.RemovePieceFromBatch(indexBatch);
                         
-                    });
-                    
-                    
-                    
-                });
-                
-                
-                
-                
+                    });          
+                });   
             }
             else
             {
-                
+                this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
+                this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
                 transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
                 transform.DOScale(0.7f, 0.3f);
+
             }
+            
             
         }
 

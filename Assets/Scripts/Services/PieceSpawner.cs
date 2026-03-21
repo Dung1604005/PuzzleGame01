@@ -122,18 +122,41 @@ public class PieceSpawner
 
         // Lay random2  piece con lai
         PieceData randomPiece2 = PickRandomPiece(pool);
-        pieceDatas.Add(randomPiece2);
-        gameState.AddPieceToBatch(randomPiece2);
-        PieceData randomPiece3 = PickRandomPiece(pool);
-        pieceDatas.Add(randomPiece3);
-        gameState.AddPieceToBatch(randomPiece3);
-
-        EventBus.Instance.Publish(new OnBatchChanged
+        if (randomPiece2 != null)
         {
-            FirstPiece = pieceDatas[0],
-            SecondPiece = pieceDatas[1],
-            ThirdPiece = pieceDatas[2]
-        });
+            pieceDatas.Add(randomPiece2);
+            gameState.AddPieceToBatch(randomPiece2);
+        }
+        else
+        {
+            Debug.LogError("Failed to pick piece 2 from pool - pool may be empty");
+        }
+        
+        PieceData randomPiece3 = PickRandomPiece(pool);
+        if (randomPiece3 != null)
+        {
+            pieceDatas.Add(randomPiece3);
+            gameState.AddPieceToBatch(randomPiece3);
+        }
+        else
+        {
+            Debug.LogError("Failed to pick piece 3 from pool - pool may be empty");
+        }
+
+        // Only publish event if we have enough pieces (safety check)
+        if (pieceDatas.Count >= 3)
+        {
+            EventBus.Instance.Publish(new OnBatchChanged
+            {
+                FirstPiece = pieceDatas[0],
+                SecondPiece = pieceDatas[1],
+                ThirdPiece = pieceDatas[2]
+            });
+        }
+        else
+        {
+            Debug.LogError($"Failed to create batch with 3 pieces. Only got {pieceDatas.Count} pieces.");
+        }
 
         Debug.Log("SUCCEED CREATE BATCH PIECE");
         

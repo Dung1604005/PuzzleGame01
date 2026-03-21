@@ -52,6 +52,12 @@ public class GameStateModel
 
     public void AddPieceToBatch(PieceData pieceData)
     {
+        // Prevent adding null pieces to batch
+        if (pieceData == null)
+        {
+            Debug.LogWarning("Tried to add null piece to batch - skipping");
+            return;
+        }
 
         batchPieces.Add(pieceData);
         RemovePieceFromBag(pieceData);
@@ -106,6 +112,13 @@ public class GameStateModel
     }
     public void RemovePieceFromBag(PieceData pieceData)
     {
+        // Safety check to prevent null reference
+        if (pieceData == null)
+        {
+            Debug.LogWarning("Tried to remove null piece from bag");
+            return;
+        }
+        
         int index = bagPiece.FindIndex(p => p.PieceID == pieceData.PieceID);
 
         if (index != -1)

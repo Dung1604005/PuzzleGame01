@@ -20,7 +20,17 @@ public class GridController : MonoBehaviour
     //Kiem tra xem co the dat khong
     public bool CanPlacePiece(PieceData piece, Vector2Int origin)
     {
+        // if(piece == null)
+        // {
+        //     Debug.Log("DONT HAVE PIECE TO PLACE");
+        //     return false;
+        // }
         bool canPlace = true;
+        if(piece == null)
+        {
+            Debug.Log("PIECE IS NULL");
+            return false;
+        }
 
         foreach (Vector2Int offSet in piece.CellOffsets)
         {
@@ -64,6 +74,7 @@ public class GridController : MonoBehaviour
 
     public bool TryPlacePiece(PieceData piece, Vector2Int origin, Sprite sprite)
     {
+        
         if (CanPlacePiece(piece, origin))
         {
             foreach (Vector2Int offSet in piece.CellOffsets)
@@ -71,6 +82,7 @@ public class GridController : MonoBehaviour
                 Vector2Int placePosition = origin + offSet;
                 _gridModel.SetCell(placePosition, piece.Value, sprite);
             }
+            
             return true;
         }
         else
@@ -110,6 +122,10 @@ public class GridController : MonoBehaviour
     {
         foreach(PieceData pieceData in _gameStateModel.BatchPieces)
         {
+            if(pieceData == null)
+            {
+                continue;
+            }
             if (CanPlacePieceAnyWhere(pieceData))
             {
                 return false;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class GridVisualizer : MonoBehaviour
@@ -45,7 +46,9 @@ public class GridVisualizer : MonoBehaviour
 
     public void OnDrawCell(OnCellChanged onCellChanged)
     {
+       
         GameObject block = blockList[onCellChanged.position.y][onCellChanged.position.x] ;
+        block.GetComponent<SpriteRenderer>().DOFade(1f, 0.05f);
         if(onCellChanged.newValue == 0 )
         {
             block.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.ThemeData.GridSprite;
@@ -54,6 +57,30 @@ public class GridVisualizer : MonoBehaviour
         {
             block.GetComponent<SpriteRenderer>().sprite = onCellChanged.newSprite;
         }
+    }
+
+    public void DrawCellPreview(Vector2Int position, Sprite sprite, bool isReverse)
+    {
+        if(sprite == null)
+        {
+            Debug.Log("PREVIEW CELL DONT HAVE SPRITE");
+            return;
+        }
+        GameObject block = blockList[position.y][position.x] ;
+        // Dua block ve trang thai ban dau
+        if (isReverse)
+        {
+            block.GetComponent<SpriteRenderer>().sprite = sprite;
+            block.GetComponent<SpriteRenderer>().DOFade(1f, 0.05f);
+        }
+        else
+        {
+            block.GetComponent<SpriteRenderer>().sprite = sprite;
+         block.GetComponent<SpriteRenderer>().DOFade(0.3f, 0.05f);
+        }
+         
+
+        
     }
 
 
