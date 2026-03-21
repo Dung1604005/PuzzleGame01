@@ -6,7 +6,7 @@ public class GridVisualizer : MonoBehaviour
 {
     [SerializeField] private GridConfig gridConfig;
 
-    private List<List<GameObject>> blockList = new List<List<GameObject>>();
+    private List<List<GameObject>>  blockList = new List<List<GameObject>>();
 
 
     public void OnEnable()
@@ -24,8 +24,8 @@ public class GridVisualizer : MonoBehaviour
     public void OnDraw()
     {
         if (gridConfig == null) return;
-
-        Gizmos.color = new Color(1f, 1f, 1f, 0.4f);
+        
+        
 
         for(int posY = 0; posY < gridConfig.gridHeight; posY++)
         {
@@ -81,6 +81,11 @@ public class GridVisualizer : MonoBehaviour
          
 
         
+    }
+
+    void Start()
+    {
+        OnDraw();
     }
 
 

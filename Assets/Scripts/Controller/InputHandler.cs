@@ -51,7 +51,7 @@ public class InputHandler : MonoBehaviour
 
         EventBus.Instance.Publish(new OnDragStart
         {
-            pos = GetWorldPositionWithOffset()
+            pos = GetWorldPosition()
         });
 
         
@@ -85,10 +85,15 @@ public class InputHandler : MonoBehaviour
 
     
 
-    public  Vector2 GetWorldPositionWithOffset(){
+    public  Vector2 GetWorldPosition(){
         Vector2 screenPosition = touchControls.Gameplay.TouchPosition.ReadValue<Vector2>();
         
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, -mainCamera.transform.position.z));
+        return new Vector2(worldPosition.x, worldPosition.y);
+    }
+
+    public  Vector2 GetWorldPositionWithOffset(){
+        Vector2 worldPosition = GetWorldPosition();
         return new Vector2(worldPosition.x, worldPosition.y + fingerOffset);
 
     }

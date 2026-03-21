@@ -56,14 +56,13 @@ public class PieceRenderer : MonoBehaviour
     float width = (maxX - minX + 1f);
     float height = (maxY - minY + 1f);
 
-    // Phóng to hitbox lên 20% cho dễ chạm
+    // Dung half-extents (+padding nho) de vung cham trung voi hinh piece.
+    float hitPadding = 0.25f;
+    draggablePiece.SetRadInteract(new Vector2(width * 0.5f + hitPadding, height * 0.5f + hitPadding));
     
-    draggablePiece.SetRadInteract(Mathf.Max(width, height)*0.7f);
-    
-    float offsetX = (minX + maxX) / 2f;
-    float offsetY = (minY + maxY) / 2f ;
-
-    draggablePiece.SetPivot(offsetX, offsetY);
+    // Pivot dung de quy doi world -> origin grid cua piece (cell offset (0,0)).
+    // Sau khi render, cell (0,0) nam tai local position (-medX, -medY).
+    draggablePiece.SetPivot(-medX, -medY);
     
 }
 

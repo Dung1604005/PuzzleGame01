@@ -6,7 +6,9 @@ public class DraggablePiece : MonoBehaviour
 {
     private int indexBatch;
 
-    [SerializeField] private float radInteract;
+    [SerializeField] private Vector2 rangeInteract;
+
+    
 
     private Vector2 pivot;
 
@@ -29,9 +31,9 @@ public class DraggablePiece : MonoBehaviour
         _originalPosition = transform.position;
     }
 
-    public void SetRadInteract(float _radInteract)
+    public void SetRadInteract(Vector2 _rangeInteract)
     {
-        radInteract = _radInteract;
+        rangeInteract = _rangeInteract;
     }
 
     public void SetPivot(float x, float y)
@@ -68,8 +70,8 @@ public class DraggablePiece : MonoBehaviour
     }
     public void OnBeginDrag(OnDragStart onDragStart)
     {
-        
-        if((onDragStart.pos - ((Vector2)transform.position + pivot)).sqrMagnitude <= radInteract*radInteract)
+        Vector2 range = onDragStart.pos - (Vector2)transform.position;
+        if(Mathf.Abs(range.x) <= rangeInteract.x && Mathf.Abs(range.y) <= rangeInteract.y)
         {
             // Safety check - ensure piece data is valid before starting drag
             if (_myPieceData == null)
@@ -80,9 +82,11 @@ public class DraggablePiece : MonoBehaviour
             
             transform.position = onDragStart.pos;
             isDragging = true;
+            transform.DOKill();
             transform.DOScale(1f, 0.1f);
             this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(_myPieceData);
             this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(pieceRenderer.SpriteBlock);
+            this.GetComponentInParent<BatchController>().SetPivotPiece(pivot);
         }
     }
 
@@ -111,6 +115,7 @@ public class DraggablePiece : MonoBehaviour
                 pieceRenderer.ClearVisual();
                 this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
                 this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
+                this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
                 transform.DOScale(0, 0.2f).OnComplete(() =>
                 {
                     
@@ -125,6 +130,7 @@ public class DraggablePiece : MonoBehaviour
             {
                 this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
                 this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
+                this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
                 transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
                 transform.DOScale(0.7f, 0.3f);
 
