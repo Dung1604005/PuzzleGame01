@@ -14,6 +14,7 @@ public class GridVisualizer : MonoBehaviour
     [SerializeField] private int borderSortingOrder = 3;
 
     private List<List<GameObject>>  blockList = new List<List<GameObject>>();
+    private Sprite[,] baseGridSprites;
     private LineRenderer borderRenderer;
 
 
@@ -34,6 +35,7 @@ public class GridVisualizer : MonoBehaviour
         if (gridConfig == null) return;
         
         blockList.Clear();
+        baseGridSprites = new Sprite[gridConfig.gridHeight, gridConfig.gridWidth];
         
 
         for(int posY = 0; posY < gridConfig.gridHeight; posY++)
@@ -47,6 +49,7 @@ public class GridVisualizer : MonoBehaviour
                 GameObject block = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, center, Quaternion.identity);
                 block.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.ThemeData.GridSprite;
                 blockList[posY].Add(block);
+                baseGridSprites[posY, posX] = GameManager.Instance.ThemeData.GridSprite;
                        
             }
         }
@@ -101,17 +104,20 @@ public class GridVisualizer : MonoBehaviour
 
     public void OnDrawCell(OnCellChanged onCellChanged)
     {
+        if (!IsValidCell(onCellChanged.position))
+        {
+            return;
+        }
        
         GameObject block = blockList[onCellChanged.position.y][onCellChanged.position.x] ;
         block.GetComponent<SpriteRenderer>().DOFade(1f, 0.05f);
-        if(onCellChanged.newValue == 0 )
-        {
-            block.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.ThemeData.GridSprite;
-        }
-        else
-        {
-            block.GetComponent<SpriteRenderer>().sprite = onCellChanged.newSprite;
-        }
+        Sprite spriteToUse = onCellChanged.newValue == 0
+            ? GameManager.Instance.ThemeData.GridSprite
+            : onCellChanged.newSprite;
+
+        baseGridSprites[onCellChanged.position.y, onCellChanged.position.x] = spriteToUse;
+
+        block.GetComponent<SpriteRenderer>().sprite = spriteToUse;
     }
 
     public void DrawCellPreview(Vector2Int position, Sprite sprite, bool isReverse)
@@ -136,6 +142,66 @@ public class GridVisualizer : MonoBehaviour
          
 
         
+    }
+
+    public void DrawLineClearPreview(List<Vector2Int> previewCells, Sprite previewSprite)
+    {
+        if (previewCells == null || previewCells.Count == 0 || previewSprite == null)
+        {
+            return;
+        }
+
+        foreach (Vector2Int cell in previewCells)
+        {
+            if (!IsValidCell(cell))
+            {
+                continue;
+            }
+
+            SpriteRenderer renderer = blockList[cell.y][cell.x].GetComponent<SpriteRenderer>();
+            renderer.sprite = previewSprite;
+            
+        }
+    }
+
+    public void ClearLineClearPreview(List<Vector2Int> previewCells)
+    {
+        if (previewCells == null || previewCells.Count == 0)
+        {
+            return;
+        }
+
+        foreach (Vector2Int cell in previewCells)
+        {
+            if (!IsValidCell(cell))
+            {
+                continue;
+            }
+
+            SpriteRenderer renderer = blockList[cell.y][cell.x].GetComponent<SpriteRenderer>();
+            renderer.sprite = baseGridSprites[cell.y, cell.x];
+            
+        }
+    }
+
+    private bool IsValidCell(Vector2Int cell)
+    {
+        if (blockList.Count == 0 || baseGridSprites == null)
+        {
+            return false;
+        }
+
+        if (cell.x < 0 || cell.y < 0)
+        {
+            return false;
+        }
+
+        if (cell.y >= blockList.Count || cell.x >= blockList[cell.y].Count)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     void Start()

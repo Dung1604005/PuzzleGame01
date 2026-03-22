@@ -1,10 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlacementPreview : MonoBehaviour
 {
     [SerializeField] private BatchController batchController;
 
     private GridVisualizer gridVisualizer;
+    private LineClearPreviewPresenter lineClearPreviewPresenter;
 
     // Luu vi tri preview gan nhat
 
@@ -28,6 +30,7 @@ public class PlacementPreview : MonoBehaviour
     void Awake()
     {
         gridVisualizer = GetComponent<GridVisualizer>();
+        lineClearPreviewPresenter = new LineClearPreviewPresenter(gridVisualizer);
         
     }
 
@@ -35,22 +38,32 @@ public class PlacementPreview : MonoBehaviour
     {
         if(batchController == null)
         {
-            Debug.Log("PLACEMENT REVIEW DONT HAVE BATCHCONTROLLER");
             return;
         }
         if(batchController.CurrentHoldingPiece == null)
         {
-            Debug.Log("DONT HAVE PIECE HOLDING RIGHT NOW");
+            lineClearPreviewPresenter.Clear();
             return;
         }
+
         Vector2 placePosition = onDragUpdate.pos + batchController.PivotPiece;
-        if(GameManager.Instance.GridController.CanPlacePiece(batchController.CurrentHoldingPiece, GridCoordinateConverter.WorldToGrid(placePosition)))
+        Vector2Int gridOrigin = GridCoordinateConverter.WorldToGrid(placePosition);
+
+        if(GameManager.Instance.GridController.CanPlacePiece(batchController.CurrentHoldingPiece, gridOrigin))
         {
             // Xoa o preview truoc 
             SetPreviewPiece(lastPieceData, GridCoordinateConverter.WorldToGrid(lastPosition), GameManager.Instance.ThemeData.GridSprite, true);
             
             // Ve preview
-            SetPreviewPiece(batchController.CurrentHoldingPiece, GridCoordinateConverter.WorldToGrid(placePosition), batchController.CurrentSpritePiece, false);
+            SetPreviewPiece(batchController.CurrentHoldingPiece, gridOrigin, batchController.CurrentSpritePiece, false);
+
+            List<Vector2Int> linePreviewCells = PlacementClearPreviewCalculator.GetPreviewCells(
+                GameManager.Instance.GridModel.Grid,
+                batchController.CurrentHoldingPiece,
+                gridOrigin
+            );
+
+            lineClearPreviewPresenter.Show(linePreviewCells, batchController.CurrentSpritePiece);
 
             lastPosition = placePosition;
 
@@ -60,14 +73,16 @@ public class PlacementPreview : MonoBehaviour
         else
         {
             SetPreviewPiece(lastPieceData, GridCoordinateConverter.WorldToGrid(lastPosition), GameManager.Instance.ThemeData.GridSprite, true);
+            lineClearPreviewPresenter.Clear();
         }
     }
 
     public void ClearPreviewPiece(OnDragEnd onDragEnd )
     {
+        lineClearPreviewPresenter.Clear();
+
         if(lastPieceData == null)
         {
-            Debug.Log("PIECEDATA REVIEW IS NULL");
             return;
         }
         Vector2Int origin = GridCoordinateConverter.WorldToGrid(lastPosition);
@@ -89,13 +104,15 @@ public class PlacementPreview : MonoBehaviour
             }
             
         }
+
+        lastPieceData = null;
+        lastPosition = Vector2.zero;
     }
 
     public void SetPreviewPiece(PieceData pieceData, Vector2Int origin, Sprite sprite, bool isReverse)
     {
         if(pieceData == null)
         {
-            Debug.Log("PIECEDATA REVIEW IS NULL");
             return;
         }
          foreach (Vector2Int offSet in pieceData.CellOffsets)
