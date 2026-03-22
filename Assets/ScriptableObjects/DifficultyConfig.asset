@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: DifficultyConfig
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyConfig
   level1:
-    easyCount: 8
+    easyCount: 10
     mediumCount: 5
-    hardCount: 2
+    hardCount: 0
   level2:
-    easyCount: 4
+    easyCount: 6
     mediumCount: 8
-    hardCount: 3
+    hardCount: 1
   level3:
-    easyCount: 2
-    mediumCount: 6
-    hardCount: 7
+    easyCount: 3
+    mediumCount: 8
+    hardCount: 4

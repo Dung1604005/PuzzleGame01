@@ -6,7 +6,15 @@ public class GridVisualizer : MonoBehaviour
 {
     [SerializeField] private GridConfig gridConfig;
 
+    [Header("Grid Border")]
+    [SerializeField] private bool drawBorder = true;
+    [SerializeField] private Color borderColor = new Color(0.15f, 0.15f, 0.15f, 1f);
+    [SerializeField] private float borderWidth = 0.06f;
+    [SerializeField] private float borderPadding = 0.04f;
+    [SerializeField] private int borderSortingOrder = 3;
+
     private List<List<GameObject>>  blockList = new List<List<GameObject>>();
+    private LineRenderer borderRenderer;
 
 
     public void OnEnable()
@@ -25,6 +33,7 @@ public class GridVisualizer : MonoBehaviour
     {
         if (gridConfig == null) return;
         
+        blockList.Clear();
         
 
         for(int posY = 0; posY < gridConfig.gridHeight; posY++)
@@ -35,13 +44,59 @@ public class GridVisualizer : MonoBehaviour
                 Vector2 center = gridConfig.gridOrigin + new Vector2(0, posY*(gridConfig.cellSize.y + gridConfig.offsetCell.y))
                 + new Vector2(posX*(gridConfig.cellSize.x + gridConfig.offsetCell.x), 0) + gridConfig.cellSize/2;
 
-                GameObject block = Instantiate(GameManager.Instance.BlockPrefab, this.transform);
-                block.transform.position = center;
+                GameObject block = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, center, Quaternion.identity);
                 block.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.ThemeData.GridSprite;
                 blockList[posY].Add(block);
                        
             }
         }
+
+        DrawGridBorder();
+    }
+
+    private void DrawGridBorder()
+    {
+        if (!drawBorder)
+        {
+            if (borderRenderer != null)
+            {
+                borderRenderer.enabled = false;
+            }
+            return;
+        }
+
+        if (borderRenderer == null)
+        {
+            GameObject borderObj = new GameObject("GridBorder");
+            borderObj.transform.SetParent(transform, false);
+            borderRenderer = borderObj.AddComponent<LineRenderer>();
+            borderRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            borderRenderer.loop = true;
+            borderRenderer.positionCount = 4;
+            borderRenderer.useWorldSpace = true;
+            borderRenderer.numCornerVertices = 2;
+            borderRenderer.numCapVertices = 2;
+        }
+
+        float stepX = gridConfig.cellSize.x + gridConfig.offsetCell.x;
+        float stepY = gridConfig.cellSize.y + gridConfig.offsetCell.y;
+
+        float left = gridConfig.gridOrigin.x - borderPadding;
+        float bottom = gridConfig.gridOrigin.y - borderPadding;
+        float right = gridConfig.gridOrigin.x + (gridConfig.gridWidth - 1) * stepX + gridConfig.cellSize.x + borderPadding;
+        float top = gridConfig.gridOrigin.y + (gridConfig.gridHeight - 1) * stepY + gridConfig.cellSize.y + borderPadding;
+
+        borderRenderer.enabled = true;
+        borderRenderer.startColor = borderColor;
+        borderRenderer.endColor = borderColor;
+        borderRenderer.startWidth = borderWidth;
+        borderRenderer.endWidth = borderWidth;
+        borderRenderer.sortingOrder = borderSortingOrder;
+
+        borderRenderer.SetPosition(0, new Vector3(left, bottom, 0f));
+        borderRenderer.SetPosition(1, new Vector3(left, top, 0f));
+        borderRenderer.SetPosition(2, new Vector3(right, top, 0f));
+        borderRenderer.SetPosition(3, new Vector3(right, bottom, 0f));
     }
 
     public void OnDrawCell(OnCellChanged onCellChanged)

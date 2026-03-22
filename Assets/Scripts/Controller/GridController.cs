@@ -82,6 +82,12 @@ public class GridController : MonoBehaviour
                 Vector2Int placePosition = origin + offSet;
                 _gridModel.SetCell(placePosition, piece.Value, sprite);
             }
+
+            EventBus.Instance.Publish(new OnPiecePlaced
+            {
+                pieceData = piece,
+                origin = origin
+            });
             
             return true;
         }

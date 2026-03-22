@@ -8,7 +8,7 @@ public class ThemeData : ScriptableObject
     public List<Sprite> BlockSprites;
 
     public Sprite GridSprite;
-    public Sprite BackgroundImage;
+    public Color colorTheme;
     public AudioClip ThemeMusic;
 
     public Sprite GetRandomSprite()

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class GameStateModel
 {
     private GameState currentGameState = GameState.Menu;
@@ -10,9 +12,11 @@ public class GameStateModel
 
     [Header("DIFFICULTY")]
 
-    private LevelDifficulty currentLevelDifficulty;
+     private LevelDifficulty currentLevelDifficulty;
 
     public LevelDifficulty CurrentLevelDifficulty => currentLevelDifficulty;
+
+    
 
     [Header("PIECE")]
 
@@ -25,8 +29,7 @@ public class GameStateModel
     public List<PieceData> BagPiece => bagPiece;
 
 
-
-
+    
 
 
     public void TransitionTo(GameState newGameState)
@@ -39,8 +42,14 @@ public class GameStateModel
 
     }
 
+    
+
     public void ChangeDifficulty(LevelDifficulty levelDifficulty)
     {
+        if(levelDifficulty == currentLevelDifficulty)
+        {
+            return;
+        }
         currentLevelDifficulty = levelDifficulty;
         EventBus.Instance.Publish(new OnDifficultyChanged
         {

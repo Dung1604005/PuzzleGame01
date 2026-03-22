@@ -11,11 +11,11 @@ public class GameManager : Singleton<GameManager>
     private GridModel _gridModel;
     public GridModel GridModel => _gridModel;
 
-    private GameStateModel _gameStateModel;
+    [SerializeField] private GameStateModel _gameStateModel;
 
     public GameStateModel GameStateModel => _gameStateModel;
 
-    private ScoreModel _scoreModel;
+    [SerializeField] private ScoreModel _scoreModel;
 
     public ScoreModel ScoreModel => _scoreModel;
 
@@ -47,12 +47,14 @@ public class GameManager : Singleton<GameManager>
 
     public void OnEnable()
     {
-        EventBus.Instance.Subscribe<OnCellChanged>(OnPiecePlaced);
+        EventBus.Instance.Subscribe<OnPiecePlaced>(OnPiecePlacedEvent);
+        EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateDifficulty);
     }
 
     public void OnDisable()
     {
-        EventBus.Instance.UnSubscribe<OnCellChanged>(OnPiecePlaced);
+        EventBus.Instance.UnSubscribe<OnPiecePlaced>(OnPiecePlacedEvent);
+        EventBus.Instance.UnSubscribe<OnScoreUpdated>(UpdateDifficulty);
     }
 
     public void StartGame()
@@ -85,7 +87,23 @@ public class GameManager : Singleton<GameManager>
         _scoreModel.Reset();
     
     }
-    public void OnPiecePlaced(OnCellChanged onCellChanged)
+
+    public void UpdateDifficulty(OnScoreUpdated onScoreUpdated)
+    {
+        if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_EASY)
+        {
+            _gameStateModel.ChangeDifficulty(LevelDifficulty.EASY);
+        }
+        else if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_NORMAL)
+        {
+            _gameStateModel.ChangeDifficulty(LevelDifficulty.NORMAL);
+        }
+        else
+        {
+            _gameStateModel.ChangeDifficulty(LevelDifficulty.HARD);
+        }
+    }
+    public void OnPiecePlacedEvent(OnPiecePlaced onPiecePlaced)
     {
         _gridController.CheckAndClearMatches();
         if (_gridController.IsGameOver())

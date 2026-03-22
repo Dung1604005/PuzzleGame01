@@ -15,6 +15,12 @@ public struct  OnCellChanged: IEvent
     public Sprite newSprite;
 }
 
+public struct OnPiecePlaced : IEvent
+{
+    public PieceData pieceData;
+    public Vector2Int origin;
+}
+
 public struct OnDifficultyChanged: IEvent
 {
     public LevelDifficulty LevelDifficulty;

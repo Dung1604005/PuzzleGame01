@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+
 public class ScoreModel
 {
     private int currentScore;
@@ -11,7 +12,7 @@ public class ScoreModel
 
     public int HighScore => highScore;
 
-    private int comboCount;
+     private int comboCount;
 
     public int ComboCount => comboCount;
 
@@ -76,6 +77,15 @@ public class ScoreModel
     public void LoadHighScore(int saved)
     {
         highScore = saved;
+    }
+
+    public ScoreModel()
+    {
+        EventBus.Instance.Publish(new OnScoreUpdated
+        {
+            CurrentScore = currentScore,
+            HighScore = highScore
+        });
     }
 
 }

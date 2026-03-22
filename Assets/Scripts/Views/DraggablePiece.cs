@@ -52,7 +52,7 @@ public class DraggablePiece : MonoBehaviour
             return;
         }
         pieceRenderer.RenderPiece(data);
-        transform.DOScale(0.7f, 0.2f);
+        transform.DOScale(0.5f, 0.2f);
     }
 
     void OnEnable()
@@ -112,15 +112,16 @@ public class DraggablePiece : MonoBehaviour
             Vector2 placePosition = onDragEnd.pos + pivot;
             if( GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock))
             {
-                pieceRenderer.ClearVisual();
+                
                 this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
                 this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
                 this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
-                transform.DOScale(0, 0.2f).OnComplete(() =>
+                transform.DOScale(0, 0.1f).OnComplete(() =>
                 {
                     
                     transform.DOMove(_originalPosition, 0f).OnComplete(() =>
-                    {        
+                    {
+                        pieceRenderer.ClearVisual();        
                         GameManager.Instance.GameStateModel.RemovePieceFromBatch(indexBatch);
                         
                     });          
@@ -132,7 +133,7 @@ public class DraggablePiece : MonoBehaviour
                 this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
                 this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
                 transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
-                transform.DOScale(0.7f, 0.3f);
+                transform.DOScale(0.5f, 0.3f);
 
             }
             

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PieceRenderer : MonoBehaviour
@@ -53,8 +54,8 @@ public class PieceRenderer : MonoBehaviour
     }
 
     // --- BƯỚC 3: Tính toán Size và Offset ---
-    float width = (maxX - minX + 1f);
-    float height = (maxY - minY + 1f);
+    float width = (maxX - minX + 1f)*0.8f;
+    float height = (maxY - minY + 1f)*0.8f;
 
     // Dung half-extents (+padding nho) de vung cham trung voi hinh piece.
     float hitPadding = 0.25f;
@@ -84,10 +85,13 @@ public class PieceRenderer : MonoBehaviour
 
         foreach (Vector2Int celloffset in pieceData.CellOffsets)
         {
-            GameObject gameObject = Instantiate(GameManager.Instance.BlockPrefab, this.transform);
+            GameObject gameObject = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, 
+            this.transform.position , Quaternion.identity);
 
+            gameObject.transform.SetParent(this.transform, false);
             gameObject.transform.localPosition = new Vector3(celloffset.x - medX, celloffset.y - medY, 0f);
-
+            gameObject.transform.localRotation = Quaternion.identity;
+            gameObject.transform.localScale = Vector3.one;
             gameObject.GetComponent<SpriteRenderer>().sprite = spriteBlock;
             gameObject.GetComponent<SpriteRenderer>().sortingOrder = 5;
         }
@@ -97,9 +101,15 @@ public class PieceRenderer : MonoBehaviour
 
     public void ClearVisual()
     {
+        var children = new List<Transform>();
         foreach (Transform child in transform)
         {
-            Destroy(child.gameObject);
+            children.Add(child);
+        }
+
+        foreach (Transform child in children)
+        {
+            ObjectPoolManager.Instance.Despawn(child.gameObject);
         }
     }
 }
