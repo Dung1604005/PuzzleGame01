@@ -14,6 +14,7 @@ public class GridVisualizer : MonoBehaviour
     [SerializeField] private int borderSortingOrder = 3;
 
     private List<List<GameObject>>  blockList = new List<List<GameObject>>();
+    private List<List<SpriteRenderer>> blockRenderers = new List<List<SpriteRenderer>>();
     private Sprite[,] baseGridSprites;
     private LineRenderer borderRenderer;
 
@@ -21,11 +22,13 @@ public class GridVisualizer : MonoBehaviour
     public void OnEnable()
     {
         EventBus.Instance.Subscribe<OnCellChanged>(OnDrawCell);
+        EventBus.Instance.Subscribe<OnLineCleared>(PlayClearLineEffect);
     }
 
     public void OnDisable()
     {
         EventBus.Instance.UnSubscribe<OnCellChanged>(OnDrawCell);
+        EventBus.Instance.UnSubscribe<OnLineCleared>(PlayClearLineEffect);
     }
 
 
@@ -33,22 +36,28 @@ public class GridVisualizer : MonoBehaviour
     public void OnDraw()
     {
         if (gridConfig == null) return;
+
+        ClearExistingGrid();
         
         blockList.Clear();
+        blockRenderers.Clear();
         baseGridSprites = new Sprite[gridConfig.gridHeight, gridConfig.gridWidth];
         
 
         for(int posY = 0; posY < gridConfig.gridHeight; posY++)
         {
             blockList.Add(new List<GameObject>());
+            blockRenderers.Add(new List<SpriteRenderer>());
             for(int posX = 0;posX< gridConfig.gridWidth; posX++)
             {
                 Vector2 center = gridConfig.gridOrigin + new Vector2(0, posY*(gridConfig.cellSize.y + gridConfig.offsetCell.y))
                 + new Vector2(posX*(gridConfig.cellSize.x + gridConfig.offsetCell.x), 0) + gridConfig.cellSize/2;
 
                 GameObject block = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, center, Quaternion.identity);
-                block.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.ThemeData.GridSprite;
+                SpriteRenderer renderer = block.GetComponent<SpriteRenderer>();
+                renderer.sprite = GameManager.Instance.ThemeData.GridSprite;
                 blockList[posY].Add(block);
+                blockRenderers[posY].Add(renderer);
                 baseGridSprites[posY, posX] = GameManager.Instance.ThemeData.GridSprite;
                        
             }
@@ -104,40 +113,41 @@ public class GridVisualizer : MonoBehaviour
 
     public void OnDrawCell(OnCellChanged onCellChanged)
     {
+        
         if (!IsValidCell(onCellChanged.position))
         {
             return;
         }
        
-        GameObject block = blockList[onCellChanged.position.y][onCellChanged.position.x] ;
-        block.GetComponent<SpriteRenderer>().DOFade(1f, 0.05f);
+        SpriteRenderer renderer = blockRenderers[onCellChanged.position.y][onCellChanged.position.x];
+        renderer.DOFade(1f, 0.05f);
         Sprite spriteToUse = onCellChanged.newValue == 0
             ? GameManager.Instance.ThemeData.GridSprite
             : onCellChanged.newSprite;
 
         baseGridSprites[onCellChanged.position.y, onCellChanged.position.x] = spriteToUse;
 
-        block.GetComponent<SpriteRenderer>().sprite = spriteToUse;
+        renderer.sprite = spriteToUse;
     }
 
     public void DrawCellPreview(Vector2Int position, Sprite sprite, bool isReverse)
     {
-        if(sprite == null)
+        if (!IsValidCell(position) || sprite == null)
         {
-            Debug.Log("PREVIEW CELL DONT HAVE SPRITE");
             return;
         }
-        GameObject block = blockList[position.y][position.x] ;
+
+        SpriteRenderer renderer = blockRenderers[position.y][position.x];
         // Dua block ve trang thai ban dau
         if (isReverse)
         {
-            block.GetComponent<SpriteRenderer>().sprite = sprite;
-            block.GetComponent<SpriteRenderer>().DOFade(1f, 0.05f);
+            renderer.sprite = sprite;
+            renderer.DOFade(1f, 0.05f);
         }
         else
         {
-            block.GetComponent<SpriteRenderer>().sprite = sprite;
-         block.GetComponent<SpriteRenderer>().DOFade(0.3f, 0.05f);
+            renderer.sprite = sprite;
+            renderer.DOFade(0.3f, 0.05f);
         }
          
 
@@ -158,7 +168,7 @@ public class GridVisualizer : MonoBehaviour
                 continue;
             }
 
-            SpriteRenderer renderer = blockList[cell.y][cell.x].GetComponent<SpriteRenderer>();
+            SpriteRenderer renderer = blockRenderers[cell.y][cell.x];
             renderer.sprite = previewSprite;
             
         }
@@ -178,15 +188,56 @@ public class GridVisualizer : MonoBehaviour
                 continue;
             }
 
-            SpriteRenderer renderer = blockList[cell.y][cell.x].GetComponent<SpriteRenderer>();
+            SpriteRenderer renderer = blockRenderers[cell.y][cell.x];
             renderer.sprite = baseGridSprites[cell.y, cell.x];
             
         }
     }
 
+    public void PlayClearLineEffect(OnLineCleared onLineCleared)
+    {
+        if (onLineCleared.position == null || onLineCleared.position.Count == 0)
+        {
+            return;
+        }
+
+        List<GameObject> tilesToClear = new List<GameObject>(onLineCleared.position.Count);
+
+        foreach(Vector2Int pos in onLineCleared.position)
+        {
+            GameObject spawnedTile = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, blockList[pos.y][pos.x].transform.position, Quaternion.identity);
+            SpriteRenderer renderer = spawnedTile.GetComponent<SpriteRenderer>();
+            renderer.sprite = GameManager.Instance.BatchController.CurrentSpritePiece;
+            renderer.sortingOrder = 10;
+            tilesToClear.Add(spawnedTile);
+        }
+
+        Sequence clearSeq = DOTween.Sequence();
+
+        foreach(GameObject tile in tilesToClear)
+        {
+            // Hieu ung thu nho lai
+            clearSeq.Insert(0, tile.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack));
+
+            // Hieu ung xoay
+            clearSeq.Insert(0, tile.transform.DORotate(new Vector3(0, 0, 90f), 0.25f, RotateMode.FastBeyond360));
+
+        }
+
+        clearSeq.OnComplete(() =>
+        {
+            foreach(GameObject tile in tilesToClear)
+            {
+                tile.transform.localScale = Vector3.one;
+                tile.transform.rotation = Quaternion.identity;
+                ObjectPoolManager.Instance.Despawn(tile);
+            }
+        });
+    }
+
     private bool IsValidCell(Vector2Int cell)
     {
-        if (blockList.Count == 0 || baseGridSprites == null)
+        if (blockList.Count == 0 || blockRenderers.Count == 0 || baseGridSprites == null)
         {
             return false;
         }
@@ -207,6 +258,25 @@ public class GridVisualizer : MonoBehaviour
     void Start()
     {
         OnDraw();
+    }
+
+    private void ClearExistingGrid()
+    {
+        if (blockList.Count == 0)
+        {
+            return;
+        }
+
+        foreach (List<GameObject> row in blockList)
+        {
+            foreach (GameObject cell in row)
+            {
+                if (cell != null)
+                {
+                    ObjectPoolManager.Instance.Despawn(cell);
+                }
+            }
+        }
     }
 
 

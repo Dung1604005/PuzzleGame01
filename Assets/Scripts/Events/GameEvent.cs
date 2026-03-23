@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public struct OnLineCleared: IEvent
 {
     public List<Vector2Int> position;

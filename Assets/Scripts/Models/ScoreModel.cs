@@ -25,7 +25,7 @@ public class ScoreModel
 
         scoreToAdd += tilesCleared*10;
 
-        // Diem thuong neu co xoa hang hoac xoa cot 
+        // Diem thuong neu co combo
         if(lines > 0)
         {
             comboCount ++;

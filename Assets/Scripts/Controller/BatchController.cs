@@ -15,6 +15,7 @@ public class BatchController : MonoBehaviour
 
     public Sprite CurrentSpritePiece => _currentSpritePiece;
 
+   
     [SerializeField] private Vector2 _pivotPiece;
 
     public Vector2 PivotPiece => _pivotPiece;
@@ -33,6 +34,7 @@ public class BatchController : MonoBehaviour
         _pivotPiece = pivot;
     }
 
+    
     public void SetCurrentHoldingPiece(PieceData currentHoldingPiece)
     {
         _currentHoldingPiece = currentHoldingPiece;

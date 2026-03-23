@@ -23,6 +23,10 @@ public class GameManager : Singleton<GameManager>
 
     public GridController GridController => _gridController;
 
+    [SerializeField] private BatchController _batchController;
+
+    public BatchController BatchController => _batchController;
+
 
 
     [Header("Data")]

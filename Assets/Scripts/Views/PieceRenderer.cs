@@ -54,8 +54,8 @@ public class PieceRenderer : MonoBehaviour
     }
 
     // --- BƯỚC 3: Tính toán Size và Offset ---
-    float width = (maxX - minX + 1f)*0.8f;
-    float height = (maxY - minY + 1f)*0.8f;
+    float width = (maxX - minX + 1f)*0.65f;
+    float height = (maxY - minY + 1f)*0.65f;
 
     // Dung half-extents (+padding nho) de vung cham trung voi hinh piece.
     float hitPadding = 0.25f;

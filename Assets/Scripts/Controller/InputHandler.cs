@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,12 +13,20 @@ public class InputHandler : MonoBehaviour
     private Camera mainCamera;
 
     private TouchControls touchControls;
+    private Vector2 lastDragWorldPos;
+    private bool hasLastDragWorldPos;
+
+    private const float DragUpdateMinDeltaSqr = 0.0001f;
 
     void Awake()
     {
         touchControls = new TouchControls();
 
         mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            mainCamera = FindAnyObjectByType<Camera>();
+        }
 
     }
 
@@ -48,6 +55,7 @@ public class InputHandler : MonoBehaviour
     private void StartTounch(InputAction.CallbackContext context)
     {
         isDragging = true;
+        hasLastDragWorldPos = false;
 
         EventBus.Instance.Publish(new OnDragStart
         {
@@ -62,6 +70,7 @@ public class InputHandler : MonoBehaviour
     public void EndTouch(InputAction.CallbackContext context)
     {
         isDragging  = false;
+        hasLastDragWorldPos = false;
         EventBus.Instance.Publish(new OnDragEnd
         {
             pos = GetWorldPositionWithOffset()
@@ -75,10 +84,16 @@ public class InputHandler : MonoBehaviour
     {
         if (isDragging)
         {
-            EventBus.Instance.Publish(new OnDragUpdate
-        {
-            pos = GetWorldPositionWithOffset()
-        });
+            Vector2 currentPos = GetWorldPositionWithOffset();
+            if (!hasLastDragWorldPos || (currentPos - lastDragWorldPos).sqrMagnitude >= DragUpdateMinDeltaSqr)
+            {
+                lastDragWorldPos = currentPos;
+                hasLastDragWorldPos = true;
+                EventBus.Instance.Publish(new OnDragUpdate
+                {
+                    pos = currentPos
+                });
+            }
 
         }
     }
@@ -86,6 +101,11 @@ public class InputHandler : MonoBehaviour
     
 
     public  Vector2 GetWorldPosition(){
+        if (mainCamera == null)
+        {
+            return Vector2.zero;
+        }
+
         Vector2 screenPosition = touchControls.Gameplay.TouchPosition.ReadValue<Vector2>();
         
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, -mainCamera.transform.position.z));

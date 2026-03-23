@@ -106,6 +106,13 @@ public class GridController : MonoBehaviour
 
         List<int> fullCollumn = LineClearCalculator.FindFullCollumn(_gridModel.Grid);
 
+        // Ban su kien 
+        EventBus.Instance.Publish(
+            new OnLineCleared
+            {
+                position = cellToRemoves
+            }
+        );
         // Xoa cac cell
         foreach(Vector2Int posCell in cellToRemoves)
         {
@@ -114,13 +121,9 @@ public class GridController : MonoBehaviour
 
         // Cong diem
         _scoreModel.AddScore(fullCollumn.Count + fullRows.Count,cellToRemoves.Count);
-        // Ban su kien 
-        EventBus.Instance.Publish(
-            new OnLineCleared
-            {
-                position = cellToRemoves
-            }
-        );
+
+        
+        
        
     }
 
