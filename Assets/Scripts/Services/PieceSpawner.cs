@@ -71,7 +71,7 @@ public class PieceSpawner
             PieceData pieceData = PickPieceByDifficulty(allPieces, LevelDifficulty.EASY);
             if(pieceData != null)
             {
-                bagPiece.Add(PickPieceByDifficulty(allPieces, LevelDifficulty.EASY));
+                bagPiece.Add(pieceData);
             }
             
         }
@@ -80,7 +80,7 @@ public class PieceSpawner
             PieceData pieceData = PickPieceByDifficulty(allPieces, LevelDifficulty.NORMAL);
             if(pieceData != null)
             {
-                bagPiece.Add(PickPieceByDifficulty(allPieces, LevelDifficulty.NORMAL));
+                bagPiece.Add(pieceData);
             }
         }
         for (int quantity = 1; quantity <= bagComposition.hardCount; quantity++)
@@ -88,7 +88,7 @@ public class PieceSpawner
             PieceData pieceData = PickPieceByDifficulty(allPieces, LevelDifficulty.HARD);
             if(pieceData != null)
             {
-                bagPiece.Add(PickPieceByDifficulty(allPieces, LevelDifficulty.HARD));
+                bagPiece.Add(pieceData);
             }
         }
         return bagPiece;

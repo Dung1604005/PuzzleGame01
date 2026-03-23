@@ -20,6 +20,7 @@ public class DraggablePiece : MonoBehaviour
     public Vector3 OriginalPosition => _originalPosition;
 
     [SerializeField] private PieceRenderer pieceRenderer;
+    private BatchController batchController;
 
     
 
@@ -28,6 +29,7 @@ public class DraggablePiece : MonoBehaviour
     void Awake()
     {
         pieceRenderer = GetComponent<PieceRenderer>();
+        batchController = GetComponentInParent<BatchController>();
         _originalPosition = transform.position;
     }
 
@@ -84,9 +86,9 @@ public class DraggablePiece : MonoBehaviour
             isDragging = true;
             transform.DOKill();
             transform.DOScale(1f, 0.1f);
-            this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(_myPieceData);
-            this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(pieceRenderer.SpriteBlock);
-            this.GetComponentInParent<BatchController>().SetPivotPiece(pivot);
+            batchController.SetCurrentHoldingPiece(_myPieceData);
+            batchController.SetCurrentSpritePiece(pieceRenderer.SpriteBlock);
+            batchController.SetPivotPiece(pivot);
         }
     }
 
@@ -113,9 +115,9 @@ public class DraggablePiece : MonoBehaviour
             if( GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock))
             {
                 
-                this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
-                this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
-                this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
+                batchController.SetCurrentHoldingPiece(null);
+                batchController.SetCurrentSpritePiece(null);
+                batchController.SetPivotPiece(Vector2.zero);
                 transform.DOScale(0, 0.1f).OnComplete(() =>
                 {
                     
@@ -129,9 +131,9 @@ public class DraggablePiece : MonoBehaviour
             }
             else
             {
-                this.GetComponentInParent<BatchController>().SetCurrentHoldingPiece(null);
-                this.GetComponentInParent<BatchController>().SetCurrentSpritePiece(null);
-                this.GetComponentInParent<BatchController>().SetPivotPiece(Vector2.zero);
+                batchController.SetCurrentHoldingPiece(null);
+                batchController.SetCurrentSpritePiece(null);
+                batchController.SetPivotPiece(Vector2.zero);
                 transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
                 transform.DOScale(0.5f, 0.3f);
 
