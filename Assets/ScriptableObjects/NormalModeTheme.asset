@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d866c7786b056f24c89a81ccfd434d4c, type: 3}
-  m_Name: BasicTheme
+  m_Name: NormalModeTheme
   m_EditorClassIdentifier: Assembly-CSharp::ThemeData
-  ThemeName: Basic
+  ThemeName: Normal Mode
   BlockSprites:
-  - {fileID: 5131012411374403324, guid: b2dd705a047451e4d94865160ed2b8af, type: 3}
-  - {fileID: -5062196652582300369, guid: e704def02bb19ba4186248c087a258ac, type: 3}
-  - {fileID: 6626369496130969526, guid: 211c85af2496f19419a66dd6ef25e90a, type: 3}
+  - {fileID: 3685237101826841866, guid: e48cbe1b9bddae34980cb8d73e9005db, type: 3}
   - {fileID: -4027971289221615466, guid: c605f5db7f592c14db8c126753b36ec9, type: 3}
+  - {fileID: 5131012411374403324, guid: b2dd705a047451e4d94865160ed2b8af, type: 3}
+  - {fileID: 6626369496130969526, guid: 211c85af2496f19419a66dd6ef25e90a, type: 3}
   GridSprite: {fileID: -6185343655787597505, guid: c6e3f8ef1fe287e478b99520df5d1a21, type: 3}
   buttonIcon: {fileID: 6751135681320707386, guid: ef12c90d7ba2fc54a87353785b789d99, type: 3}
-  colorGridBorder: {r: 0.16470589, g: 0.19607843, b: 0.2509804, a: 1}
-  colorBackground: {r: 0.6117647, g: 0.68235296, b: 0.7411765, a: 1}
-  comboLowEffectColor: {r: 0.4117647, g: 0.9411765, b: 0.68235296, a: 0.60784316}
-  comboHighEffectColor: {r: 1, g: 0.8352941, b: 0.30980393, a: 0.7647059}
+  colorGridBorder: {r: 0, g: 0.72156864, b: 0.83137256, a: 1}
+  colorBackground: {r: 0.101960786, g: 0.14117648, b: 0.21176471, a: 1}
+  comboLowEffectColor: {r: 0, g: 0.8980392, b: 1, a: 0.5882353}
+  comboHighEffectColor: {r: 1, g: 0.2509804, b: 0.5058824, a: 0.7647059}
   ThemeMusic: {fileID: 0}

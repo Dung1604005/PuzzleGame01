@@ -120,7 +120,7 @@ public class GridController : MonoBehaviour
         }
 
         // Cong diem
-        _scoreModel.AddScore(fullCollumn.Count + fullRows.Count,cellToRemoves.Count);
+        _scoreModel.AddScore(fullCollumn.Count + fullRows.Count);
 
         
         

@@ -38,6 +38,8 @@ public struct OnScoreUpdated: IEvent
     public int CurrentScore;
 
     public int HighScore;
+
+    public int CurrentCombo;
 }
 
 public struct OnBatchChanged : IEvent
@@ -47,4 +49,10 @@ public struct OnBatchChanged : IEvent
     public PieceData SecondPiece;
 
     public PieceData ThirdPiece;
+}
+
+
+public struct OnChangeTheme : IEvent
+{
+    
 }

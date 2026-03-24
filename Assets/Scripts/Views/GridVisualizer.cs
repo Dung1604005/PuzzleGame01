@@ -8,7 +8,6 @@ public class GridVisualizer : MonoBehaviour
 
     [Header("Grid Border")]
     [SerializeField] private bool drawBorder = true;
-    [SerializeField] private Color borderColor = new Color(0.15f, 0.15f, 0.15f, 1f);
     [SerializeField] private float borderWidth = 0.06f;
     [SerializeField] private float borderPadding = 0.04f;
     [SerializeField] private int borderSortingOrder = 3;
@@ -99,8 +98,8 @@ public class GridVisualizer : MonoBehaviour
         float top = gridConfig.gridOrigin.y + (gridConfig.gridHeight - 1) * stepY + gridConfig.cellSize.y + borderPadding;
 
         borderRenderer.enabled = true;
-        borderRenderer.startColor = borderColor;
-        borderRenderer.endColor = borderColor;
+        borderRenderer.startColor = GameManager.Instance.ThemeData.colorGridBorder;
+        borderRenderer.endColor = GameManager.Instance.ThemeData.colorGridBorder;
         borderRenderer.startWidth = borderWidth;
         borderRenderer.endWidth = borderWidth;
         borderRenderer.sortingOrder = borderSortingOrder;

@@ -47,12 +47,14 @@ public class GameManager : Singleton<GameManager>
 
     public GameObject BlockPrefab => blockPrefab;
 
+    [SerializeField] private List<ThemeData> themeDataList = new List<ThemeData>();
+
 
 
     public void OnEnable()
     {
         EventBus.Instance.Subscribe<OnPiecePlaced>(OnPiecePlacedEvent);
-        EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateDifficulty);
+        // EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateDifficulty);
     }
 
     public void OnDisable()
@@ -74,6 +76,8 @@ public class GameManager : Singleton<GameManager>
         _gameStateModel.ResetBagPiece(pieceDatas, difficultyConfig);
         
         PieceSpawner.SpawnNewBatch(_gameStateModel, _gridController, _gameStateModel.BagPiece);
+
+        EventBus.Instance.Publish(new OnChangeTheme{});
     }
 
     public void GameOver()
@@ -96,15 +100,34 @@ public class GameManager : Singleton<GameManager>
     {
         if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_EASY)
         {
+            ChangeTheme(LevelDifficulty.EASY, themeDataList[0]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.EASY);
+            
         }
         else if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_NORMAL)
         {
+            ChangeTheme(LevelDifficulty.NORMAL, themeDataList[1]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.NORMAL);
+           
         }
         else
         {
+            ChangeTheme(LevelDifficulty.HARD, themeDataList[2]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.HARD);
+            
+        }
+    }
+
+    public void ChangeTheme(LevelDifficulty targetDifficulty, ThemeData _themeData)
+    {
+        if(targetDifficulty == _gameStateModel.CurrentLevelDifficulty)
+        {
+            return;
+        }
+        else
+        {
+            themeData = _themeData;
+            EventBus.Instance.Publish(new OnChangeTheme{});
         }
     }
     public void OnPiecePlacedEvent(OnPiecePlaced onPiecePlaced)

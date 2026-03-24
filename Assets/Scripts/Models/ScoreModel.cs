@@ -16,19 +16,19 @@ public class ScoreModel
 
     public int ComboCount => comboCount;
 
+    // Tick combo kiem tra xem da bao nhieu lan combo chua duoc kich hoat
+    private int tickCombo = 0;
+
     
 
-    public void AddScore(int lines, int tilesCleared)
+    public void AddScore(int lines)
     {
         int scoreToAdd = 0;
-        // Tinh 10 diem voi moi tile bi xoa
-
-        scoreToAdd += tilesCleared*10;
 
         // Diem thuong neu co combo
         if(lines > 0)
         {
-            comboCount ++;
+            comboCount += lines;
 
             int lineBonus = 0;
 
@@ -45,17 +45,23 @@ public class ScoreModel
             int comboBonus = (comboCount > 1) ? (comboCount-1)*67:0;
             // Mot combo duoc +67 (tinh tu combo 2)
             scoreToAdd += lineBonus + comboBonus;
+            tickCombo = 0;
         }
         else
         {
-            ResetCombo();
+            tickCombo+= 1;
+            if(tickCombo >= 3)
+            {
+                ResetCombo();
+            }
         }
         currentScore += scoreToAdd;
         highScore = Math.Max(currentScore, highScore);
         EventBus.Instance.Publish(new OnScoreUpdated
         {
             CurrentScore = currentScore,
-            HighScore = highScore
+            HighScore = highScore,
+            CurrentCombo = comboCount            
         });
     }
 

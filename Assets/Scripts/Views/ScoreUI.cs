@@ -13,6 +13,10 @@ public class ScoreUI : MonoBehaviour
     private int _currentDisplayScore = 0;
     private int _targetScore = 0;
 
+    private int _currentDisplayHighScore = 0;
+
+    private int _targetHighScore = 0;
+
     public void OnEnable()
     {
         EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateScore);
@@ -29,8 +33,10 @@ public class ScoreUI : MonoBehaviour
             return;
         }
         _targetScore = onScoreUpdated.CurrentScore;
+        _targetHighScore = onScoreUpdated.HighScore;
 
         DOTween.Kill("ScoreAnimation");
+        DOTween.Kill("HighScoreAnimation");
         currentScore.transform.DOScale(1.1f, speedUpdatingScore/2);
 
         DOTween.To(() => _currentDisplayScore,
@@ -42,6 +48,16 @@ public class ScoreUI : MonoBehaviour
         _targetScore, speedUpdatingScore).SetId("ScoreAnimation").SetEase(Ease.OutCubic).OnComplete(() =>
         {
             currentScore.transform.DOScale(1f, speedUpdatingScore/2);
+        });
+        DOTween.To(() => _currentDisplayHighScore,
+        x =>
+        {
+            _currentDisplayHighScore = x;
+            highScore.text = _currentDisplayHighScore.ToString();
+        },
+        _targetHighScore, speedUpdatingScore).SetId("HighScoreAnimation").SetEase(Ease.OutCubic).OnComplete(() =>
+        {
+            highScore.transform.DOScale(1f, speedUpdatingScore/2);
         });
     }
 }
