@@ -2,11 +2,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
     [SerializeField] private Image background;
 
     [SerializeField] private Image buttonIcon;
+
+    
 
 
     public void OnEnable()

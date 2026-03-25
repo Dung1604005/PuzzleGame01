@@ -57,6 +57,11 @@ public class ScoreModel
         }
         currentScore += scoreToAdd;
         highScore = Math.Max(currentScore, highScore);
+        EventBus.Instance.Publish(new OnAddScore
+        {
+            AddedScore = scoreToAdd,
+            CurrentCombo = comboCount     
+        });
         EventBus.Instance.Publish(new OnScoreUpdated
         {
             CurrentScore = currentScore,
@@ -94,4 +99,11 @@ public class ScoreModel
         });
     }
 
+}
+
+public struct OnAddScore: IEvent
+{
+    public int AddedScore;
+
+    public int CurrentCombo;
 }

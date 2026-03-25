@@ -898,6 +898,12 @@ MonoBehaviour:
   - Prefab: {fileID: 6990438466121416966, guid: 8a6c171d437eef8478a9011b86cec0ca, type: 3}
     DefaultCapacity: 80
     MaxSize: 120
+    transformParent: {fileID: 578084784}
+    AutoPrewarm: 1
+  - Prefab: {fileID: 782093660950108669, guid: dcfcbaae59fa9b54397299fca37356ee, type: 3}
+    DefaultCapacity: 16
+    MaxSize: 32
+    transformParent: {fileID: 1342353217}
     AutoPrewarm: 1
 --- !u!4 &578084784
 Transform:
@@ -1392,7 +1398,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1342353217}
   - component: {fileID: 1342353219}
-  - component: {fileID: 1342353220}
   - component: {fileID: 1342353221}
   m_Layer: 5
   m_Name: SafeArea
@@ -1414,6 +1419,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 243154986}
+  - {fileID: 1633988121}
   m_Father: {fileID: 1491306360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1429,20 +1435,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342353216}
   m_CullTransparentMesh: 1
---- !u!114 &1342353220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1342353216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862924c10315ac64ca95046334d35bdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  background: {fileID: 149765897}
-  buttonIcon: {fileID: 1851620318}
 --- !u!114 &1342353221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1527,6 +1519,7 @@ GameObject:
   - component: {fileID: 1491306359}
   - component: {fileID: 1491306358}
   - component: {fileID: 1491306357}
+  - component: {fileID: 1491306361}
   m_Layer: 5
   m_Name: MainUI
   m_TagString: Untagged
@@ -1595,7 +1588,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!224 &1491306360
 RectTransform:
@@ -1617,6 +1610,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1491306361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491306356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862924c10315ac64ca95046334d35bdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  background: {fileID: 149765897}
+  buttonIcon: {fileID: 1851620318}
 --- !u!1 &1504836653
 GameObject:
   m_ObjectHideFlags: 0
@@ -1678,7 +1685,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d0c02d05b90f794faf905dcdaa31ee1, type: 2}
   - {fileID: 11400000, guid: 45f0a93b6391f1c4085b98038bf4f73a, type: 2}
   difficultyConfig: {fileID: 11400000, guid: 1484d6b4e944a324ab56262423aeb946, type: 2}
-  themeData: {fileID: 11400000, guid: 2c647a3663f27624190b0b20a87caf70, type: 2}
+  themeData: {fileID: 11400000, guid: d25bb449e2ec9184f8b4a2b896e7dea1, type: 2}
   blockPrefab: {fileID: 6990438466121416966, guid: 8a6c171d437eef8478a9011b86cec0ca, type: 3}
   themeDataList:
   - {fileID: 11400000, guid: d25bb449e2ec9184f8b4a2b896e7dea1, type: 2}
@@ -1835,6 +1842,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1624753797}
   m_CullTransparentMesh: 1
+--- !u!1 &1633988120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1633988121}
+  - component: {fileID: 1633988122}
+  m_Layer: 5
+  m_Name: FloatingTextManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1633988121
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633988120}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1342353217}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1633988122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633988120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df11bb8a50299248b23f78fc92df0b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FloatingTextManager
+  targetCanvas: {fileID: 0}
+  floatingTextRoot: {fileID: 0}
+  worldCamera: {fileID: 0}
 --- !u!1 &1851171684
 GameObject:
   m_ObjectHideFlags: 0

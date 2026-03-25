@@ -86,9 +86,7 @@ public class PieceRenderer : MonoBehaviour
         foreach (Vector2Int celloffset in pieceData.CellOffsets)
         {
             GameObject gameObject = ObjectPoolManager.Instance.Spawn(GameManager.Instance.BlockPrefab, 
-            this.transform.position , Quaternion.identity);
-
-            gameObject.transform.SetParent(this.transform, false);
+            this.transform.position , Quaternion.identity, this.transform);
             gameObject.transform.localPosition = new Vector3(celloffset.x - medX, celloffset.y - medY, 0f);
             gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.localScale = Vector3.one;

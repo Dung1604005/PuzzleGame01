@@ -17,6 +17,10 @@ public class ThemeData : ScriptableObject
     public Color comboLowEffectColor;
 
     public Color comboHighEffectColor;
+
+    public Color scoreFloatingText;
+
+    public Color comboFloatingText;
     public AudioClip ThemeMusic;
 
     public Sprite GetRandomSprite()

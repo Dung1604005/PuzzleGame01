@@ -22,9 +22,16 @@ public class DraggablePiece : MonoBehaviour
     [SerializeField] private PieceRenderer pieceRenderer;
     private BatchController batchController;
 
+    private Vector2 currentPlacePosition;
+
+    // Chỉ piece vừa place thành công mới được spawn floating text cho lượt đó.
+    private bool _awaitingScoreForPlacedPiece;
+
     
 
     private bool isDragging;
+
+    
 
     void Awake()
     {
@@ -62,6 +69,7 @@ public class DraggablePiece : MonoBehaviour
         EventBus.Instance.Subscribe<OnDragStart>(OnBeginDrag);
         EventBus.Instance.Subscribe<OnDragUpdate>(OnDrag);
         EventBus.Instance.Subscribe<OnDragEnd>(OnEndDrag);
+        EventBus.Instance.Subscribe<OnAddScore>(SpawnFloatingText);
     }
 
     void OnDisable()
@@ -69,6 +77,7 @@ public class DraggablePiece : MonoBehaviour
         EventBus.Instance.UnSubscribe<OnDragStart>(OnBeginDrag);
         EventBus.Instance.UnSubscribe<OnDragUpdate>(OnDrag);
         EventBus.Instance.UnSubscribe<OnDragEnd>(OnEndDrag);
+         EventBus.Instance.UnSubscribe<OnAddScore>(SpawnFloatingText);
     }
     public void OnBeginDrag(OnDragStart onDragStart)
     {
@@ -112,6 +121,8 @@ public class DraggablePiece : MonoBehaviour
                 return;
             }
             Vector2 placePosition = onDragEnd.pos + pivot;
+            currentPlacePosition = placePosition;
+            _awaitingScoreForPlacedPiece = true;
             if( GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock))
             {
                 
@@ -131,6 +142,7 @@ public class DraggablePiece : MonoBehaviour
             }
             else
             {
+                _awaitingScoreForPlacedPiece = false;
                 batchController.SetCurrentHoldingPiece(null);
                 batchController.SetCurrentSpritePiece(null);
                 batchController.SetPivotPiece(Vector2.zero);
@@ -142,6 +154,47 @@ public class DraggablePiece : MonoBehaviour
             
         }
 
+    }
+
+    public void SpawnFloatingText(OnAddScore onAddScore)
+    {
+        if (!_awaitingScoreForPlacedPiece)
+        {
+            return;
+        }
+
+        _awaitingScoreForPlacedPiece = false;
+
+        if(onAddScore.AddedScore == 0)
+        {
+            return;
+        }
+        
+        // Score text hiển thị tại vị trí điểm đặt piece
+        Vector2 scorePosition = currentPlacePosition;
+        
+        EventBus.Instance.Publish(new OnAddFloatingText
+        {
+            Content = "+" + onAddScore.AddedScore,
+            FontSize = 70,
+            Position = scorePosition,
+            TextColor = GameManager.Instance.ThemeData.scoreFloatingText,
+            PositionType = FloatingTextPositionType.WorldPosition
+        });
+
+        if(onAddScore.CurrentCombo < 2){
+            return;
+        }
+
+        // Combo text hiển thị giữa màn hình UI
+        EventBus.Instance.Publish(new OnAddFloatingText
+        {
+            Content = "COMBO X" + onAddScore.CurrentCombo,
+            FontSize = 110,
+            Position = Vector2.zero,
+            TextColor = GameManager.Instance.ThemeData.comboFloatingText,
+            PositionType = FloatingTextPositionType.ScreenCenter
+        });
     }
 
 

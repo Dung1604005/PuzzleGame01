@@ -8,18 +8,29 @@ public class PoolConfig
     public int DefaultCapacity = 10;
     public int MaxSize = 100;
 
+    public Transform transformParent;
+
     public bool AutoPrewarm = true;
 }
 public class ObjectPoolManager : MonoBehaviour
 {
+    private const int DefaultPoolCapacity = 10;
+    private const int DefaultPoolMaxSize = 50;
+
+    private sealed class PoolRuntimeInfo
+    {
+        public Transform PoolParent;
+        public IObjectPool<GameObject> Pool;
+    }
+
     public static ObjectPoolManager Instance { get; private set; }
 
     [Header("Pool Configurations (Tùy chọn)")]
     [Tooltip("Khai báo dung lượng riêng cho từng Prefab. Nếu không khai báo sẽ dùng mặc định.")]
     public List<PoolConfig> poolConfigs = new List<PoolConfig>();
 
-    private Dictionary<int, IObjectPool<GameObject>> _pools = new Dictionary<int, IObjectPool<GameObject>>();
-    private Dictionary<GameObject, IObjectPool<GameObject>> _spawnedObjects = new Dictionary<GameObject, IObjectPool<GameObject>>();
+    private Dictionary<int, PoolRuntimeInfo> _poolInfos = new Dictionary<int, PoolRuntimeInfo>();
+    private Dictionary<GameObject, PoolRuntimeInfo> _spawnedObjects = new Dictionary<GameObject, PoolRuntimeInfo>();
 
     // Từ điển tra cứu cấu hình nhanh
     private Dictionary<int, PoolConfig> _configDict = new Dictionary<int, PoolConfig>();
@@ -53,55 +64,83 @@ public class ObjectPoolManager : MonoBehaviour
         }
     }
 
-    private IObjectPool<GameObject> GetPool(GameObject prefab)
+    private PoolRuntimeInfo GetPoolInfo(GameObject prefab)
     {
         int prefabID = prefab.GetInstanceID();
 
-        if (!_pools.TryGetValue(prefabID, out IObjectPool<GameObject> pool))
+        if (!_poolInfos.TryGetValue(prefabID, out PoolRuntimeInfo poolInfo))
         {
-            // 1. Khởi tạo thông số mặc định 
-            int dCapacity = 10;
-            int mSize = 50;
+            int dCapacity = DefaultPoolCapacity;
+            int mSize = DefaultPoolMaxSize;
+            Transform parent = transform;
 
-            // 2. Kiểm tra xem Prefab này có cấu hình riêng không?
             if (_configDict.TryGetValue(prefabID, out PoolConfig config))
             {
                 dCapacity = config.DefaultCapacity;
                 mSize = config.MaxSize;
+                if (config.transformParent != null)
+                {
+                    parent = config.transformParent;
+                }
             }
 
-            // 3. Tạo Pool với thông số chuẩn xác
-            pool = new ObjectPool<GameObject>(
-                createFunc: () => Instantiate(prefab, transform),
+            poolInfo = new PoolRuntimeInfo
+            {
+                PoolParent = parent
+            };
+
+            poolInfo.Pool = new ObjectPool<GameObject>(
+                createFunc: () =>
+                {
+                    GameObject obj = Instantiate(prefab, parent);
+                    obj.SetActive(false);
+                    return obj;
+                },
                 actionOnGet: (obj) => obj.SetActive(true),
-                actionOnRelease: (obj) => obj.SetActive(false),
+                actionOnRelease: (obj) =>
+                {
+                    if (obj.transform.parent != parent)
+                    {
+                        obj.transform.SetParent(parent, false);
+                    }
+                    obj.SetActive(false);
+                },
                 actionOnDestroy: (obj) => Destroy(obj),
                 collectionCheck: true,
-                defaultCapacity: dCapacity, // Lấy từ cấu hình
-                maxSize: mSize              // Lấy từ cấu hình
+                defaultCapacity: dCapacity,
+                maxSize: mSize
             );
 
-            _pools.Add(prefabID, pool);
+            _poolInfos.Add(prefabID, poolInfo);
         }
-        return pool;
+        return poolInfo;
     }
 
     // --- CÁC HÀM API DÀNH CHO CÁC CLASS KHÁC GỌI ---
 
 
-    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
+    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parentOverride = null)
     {
-        IObjectPool<GameObject> pool = GetPool(prefab);
-        GameObject obj = pool.Get(); // Mượn 1 object ra
+        if (prefab == null)
+        {
+            Debug.LogError("Spawn thất bại: prefab null.");
+            return null;
+        }
 
-        // Reset state from previous use before placing.
-        obj.transform.SetParent(transform, false);
-        obj.transform.localScale = Vector3.one;
-        obj.transform.position = position;
-        obj.transform.rotation = rotation;
+        PoolRuntimeInfo poolInfo = GetPoolInfo(prefab);
+        GameObject obj = poolInfo.Pool.Get();
+        Transform targetParent = parentOverride != null ? parentOverride : poolInfo.PoolParent;
+        Transform objTransform = obj.transform;
 
-        // Đánh dấu object này thuộc về pool nào để lát trả lại cho đúng
-        _spawnedObjects[obj] = pool;
+        if (objTransform.parent != targetParent)
+        {
+            objTransform.SetParent(targetParent, false);
+        }
+
+        objTransform.SetPositionAndRotation(position, rotation);
+        objTransform.localScale = Vector3.one;
+
+        _spawnedObjects[obj] = poolInfo;
 
         return obj;
     }
@@ -109,12 +148,16 @@ public class ObjectPoolManager : MonoBehaviour
 
     public void Despawn(GameObject obj)
     {
-        if (_spawnedObjects.TryGetValue(obj, out IObjectPool<GameObject> pool))
+        if (obj == null)
         {
-            obj.transform.SetParent(this.transform, false);
+            return;
+        }
+
+        if (_spawnedObjects.TryGetValue(obj, out PoolRuntimeInfo poolInfo))
+        {
             obj.transform.localScale = Vector3.one;
-            pool.Release(obj); // Trả về kho
-            _spawnedObjects.Remove(obj); // Xóa khỏi danh sách đang mượn
+            poolInfo.Pool.Release(obj);
+            _spawnedObjects.Remove(obj);
         }
         else
         {
@@ -127,17 +170,30 @@ public class ObjectPoolManager : MonoBehaviour
 
     public void Prewarm(GameObject prefab, int count)
     {
-        IObjectPool<GameObject> pool = GetPool(prefab);
-        List<GameObject> tempObjects = new List<GameObject>();
-        // 1. Mượn ra liên tục (Ép Pool phải gọi Instantiate n lần)
-        for (int i = 0; i < count; i++)
+        if (prefab == null || count <= 0)
         {
-            tempObjects.Add(pool.Get());
+            return;
         }
-        // 2. Trả lại ngay lập tức (Ép Pool cất toàn bộ n cái vào kho)
-        foreach (var obj in tempObjects)
+
+        PoolRuntimeInfo poolInfo = GetPoolInfo(prefab);
+        List<GameObject> tempObjects = ListPool<GameObject>.Get();
+
+        try
         {
-            pool.Release(obj);
+            for (int i = 0; i < count; i++)
+            {
+                tempObjects.Add(poolInfo.Pool.Get());
+            }
+
+            foreach (GameObject obj in tempObjects)
+            {
+                poolInfo.Pool.Release(obj);
+            }
+        }
+        finally
+        {
+            tempObjects.Clear();
+            ListPool<GameObject>.Release(tempObjects);
         }
     }
 }
