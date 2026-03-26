@@ -129,6 +129,10 @@ public class GridController : MonoBehaviour
 
     public bool IsGameOver()
     {
+        if(_gameStateModel.BatchPieces == null || _gameStateModel.BatchPieces.Count == 0)
+        {
+            return false;
+        }
         foreach(PieceData pieceData in _gameStateModel.BatchPieces)
         {
             if(pieceData == null)

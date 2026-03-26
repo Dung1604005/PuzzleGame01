@@ -24,6 +24,6 @@ MonoBehaviour:
   colorBackground: {r: 0.101960786, g: 0.14117648, b: 0.21176471, a: 1}
   comboLowEffectColor: {r: 0, g: 0.8980392, b: 1, a: 0.5882353}
   comboHighEffectColor: {r: 1, g: 0.2509804, b: 0.5058824, a: 0.7647059}
-  scoreFloatingText: {r: 0, g: 0.8980392, b: 1, a: 1}
+  scoreFloatingText: {r: 1, g: 1, b: 1, a: 1}
   comboFloatingText: {r: 1, g: 0.2509804, b: 0.5058824, a: 1}
   ThemeMusic: {fileID: 0}

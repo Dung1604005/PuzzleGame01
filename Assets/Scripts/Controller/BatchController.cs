@@ -50,6 +50,7 @@ public class BatchController : MonoBehaviour
     {
         if(_listPiece.Count < 3)
         {
+            GameManager.Instance.GameOver();
             Debug.Log("BATCH DONT HAVE ENOUGH SLOT");
             return;
         }

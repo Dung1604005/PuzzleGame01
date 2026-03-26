@@ -155,6 +155,7 @@ public class PieceSpawner
         }
         else
         {
+            
             Debug.LogError($"Failed to create batch with 3 pieces. Only got {pieceDatas.Count} pieces.");
         }
 

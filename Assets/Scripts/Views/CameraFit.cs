@@ -16,10 +16,12 @@ public class CameraFit : MonoBehaviour
     public float requiredBottomPaddingWorld = 3.5f;
 
     private Camera _cam;
+    private float _basePosY;
 
     void Awake()
     {
         _cam = GetComponent<Camera>();
+        _basePosY = transform.position.y;
         AdjustCamera();
     }
 
@@ -60,7 +62,7 @@ public class CameraFit : MonoBehaviour
         // Vị trí Y lý tưởng = (Padding Dưới - Padding Trên) / 2
         float yOffset = (requiredBottomPaddingWorld - requiredTopPaddingWorld) / 2f;
         Vector3 newPos = transform.position;
-        newPos.y += yOffset;
+        newPos.y = _basePosY + yOffset;
         transform.position = newPos;
     }
 }

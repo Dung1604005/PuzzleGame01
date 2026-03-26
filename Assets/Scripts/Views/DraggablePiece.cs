@@ -8,12 +8,12 @@ public class DraggablePiece : MonoBehaviour
 
     [SerializeField] private Vector2 rangeInteract;
 
-    
+
 
     private Vector2 pivot;
 
 
-    [SerializeField] private PieceData _myPieceData ;
+    [SerializeField] private PieceData _myPieceData;
     public PieceData MyPieceData => _myPieceData;
     private Vector3 _originalPosition;
 
@@ -27,11 +27,11 @@ public class DraggablePiece : MonoBehaviour
     // Chỉ piece vừa place thành công mới được spawn floating text cho lượt đó.
     private bool _awaitingScoreForPlacedPiece;
 
-    
+
 
     private bool isDragging;
 
-    
+
 
     void Awake()
     {
@@ -55,8 +55,8 @@ public class DraggablePiece : MonoBehaviour
     {
         indexBatch = _index;
         pieceRenderer.ClearVisual();
-        _myPieceData  = data;
-        if(data == null)
+        _myPieceData = data;
+        if (data == null)
         {
             return;
         }
@@ -77,12 +77,16 @@ public class DraggablePiece : MonoBehaviour
         EventBus.Instance.UnSubscribe<OnDragStart>(OnBeginDrag);
         EventBus.Instance.UnSubscribe<OnDragUpdate>(OnDrag);
         EventBus.Instance.UnSubscribe<OnDragEnd>(OnEndDrag);
-         EventBus.Instance.UnSubscribe<OnAddScore>(SpawnFloatingText);
+        EventBus.Instance.UnSubscribe<OnAddScore>(SpawnFloatingText);
     }
     public void OnBeginDrag(OnDragStart onDragStart)
     {
+        if (GameManager.Instance.GameStateModel.CurrentGameState != GameState.Playing)
+        {
+            return;
+        }
         Vector2 range = onDragStart.pos - (Vector2)transform.position;
-        if(Mathf.Abs(range.x) <= rangeInteract.x && Mathf.Abs(range.y) <= rangeInteract.y)
+        if (Mathf.Abs(range.x) <= rangeInteract.x && Mathf.Abs(range.y) <= rangeInteract.y)
         {
             // Safety check - ensure piece data is valid before starting drag
             if (_myPieceData == null)
@@ -90,7 +94,9 @@ public class DraggablePiece : MonoBehaviour
                 Debug.LogWarning("Cannot begin drag - piece data is null");
                 return;
             }
-            
+
+            AudioManager.Instance.PlayPickBlockSound();
+
             transform.position = onDragStart.pos;
             isDragging = true;
             transform.DOKill();
@@ -103,6 +109,16 @@ public class DraggablePiece : MonoBehaviour
 
     public void OnDrag(OnDragUpdate onDragUpdate)
     {
+        if (GameManager.Instance.GameStateModel.CurrentGameState != GameState.Playing)
+        {
+            batchController.SetCurrentHoldingPiece(null);
+            batchController.SetCurrentSpritePiece(null);
+            batchController.SetPivotPiece(Vector2.zero);
+            transform.DOMove(_originalPosition, 0.3f).SetEase(Ease.OutBack);
+            transform.DOScale(0.5f, 0.3f);
+            isDragging = false;
+            return;
+        }
         if (isDragging)
         {
             transform.position = new Vector3(onDragUpdate.pos.x, onDragUpdate.pos.y, 0f);
@@ -114,8 +130,8 @@ public class DraggablePiece : MonoBehaviour
         if (isDragging)
         {
             isDragging = false;
-            
-            if(_myPieceData == null)
+
+            if (_myPieceData == null)
             {
                 Debug.Log("CURRENT PIECE HOLDING IS NULL");
                 return;
@@ -123,22 +139,23 @@ public class DraggablePiece : MonoBehaviour
             Vector2 placePosition = onDragEnd.pos + pivot;
             currentPlacePosition = placePosition;
             _awaitingScoreForPlacedPiece = true;
-            if( GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock))
+            if (GameManager.Instance.GridController.TryPlacePiece(_myPieceData, GridCoordinateConverter.WorldToGrid(placePosition), pieceRenderer.SpriteBlock)
+            && GameManager.Instance.GameStateModel.CurrentGameState == GameState.Playing)
             {
-                
+
                 batchController.SetCurrentHoldingPiece(null);
                 batchController.SetCurrentSpritePiece(null);
                 batchController.SetPivotPiece(Vector2.zero);
                 transform.DOScale(0, 0.1f).OnComplete(() =>
                 {
-                    
+
                     transform.DOMove(_originalPosition, 0f).OnComplete(() =>
                     {
-                        pieceRenderer.ClearVisual();        
+                        pieceRenderer.ClearVisual();
                         GameManager.Instance.GameStateModel.RemovePieceFromBatch(indexBatch);
-                        
-                    });          
-                });   
+
+                    });
+                });
             }
             else
             {
@@ -150,8 +167,8 @@ public class DraggablePiece : MonoBehaviour
                 transform.DOScale(0.5f, 0.3f);
 
             }
-            
-            
+
+
         }
 
     }
@@ -165,14 +182,14 @@ public class DraggablePiece : MonoBehaviour
 
         _awaitingScoreForPlacedPiece = false;
 
-        if(onAddScore.AddedScore == 0)
+        if (onAddScore.AddedScore == 0)
         {
             return;
         }
-        
+
         // Score text hiển thị tại vị trí điểm đặt piece
         Vector2 scorePosition = currentPlacePosition;
-        
+
         EventBus.Instance.Publish(new OnAddFloatingText
         {
             Content = "+" + onAddScore.AddedScore,
@@ -182,7 +199,8 @@ public class DraggablePiece : MonoBehaviour
             PositionType = FloatingTextPositionType.WorldPosition
         });
 
-        if(onAddScore.CurrentCombo < 2){
+        if (onAddScore.CurrentCombo < 2)
+        {
             return;
         }
 
@@ -198,5 +216,5 @@ public class DraggablePiece : MonoBehaviour
     }
 
 
-    
+
 }

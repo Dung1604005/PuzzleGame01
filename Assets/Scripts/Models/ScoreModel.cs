@@ -90,6 +90,20 @@ public class ScoreModel
         highScore = saved;
     }
 
+    public void LoadState(int savedCurrentScore, int savedHighScore, int savedComboCount)
+    {
+        currentScore = Mathf.Max(0, savedCurrentScore);
+        highScore = Mathf.Max(currentScore, savedHighScore);
+        comboCount = Mathf.Max(0, savedComboCount);
+
+        EventBus.Instance.Publish(new OnScoreUpdated
+        {
+            CurrentScore = currentScore,
+            HighScore = highScore,
+            CurrentCombo = comboCount
+        });
+    }
+
     public ScoreModel()
     {
         EventBus.Instance.Publish(new OnScoreUpdated

@@ -8,7 +8,7 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField] private Image buttonIcon;
 
-    
+    [SerializeField] private MenuPause menuPause;
 
 
     public void OnEnable()
@@ -25,4 +25,23 @@ public class UIManager : Singleton<UIManager>
         background.color = GameManager.Instance.ThemeData.colorBackground;
         buttonIcon.sprite = GameManager.Instance.ThemeData.buttonIcon;
     }
+
+    public void OpenMenuPause()
+    {
+        EventBus.Instance.Publish(new OnSelection
+        {
+            
+        });
+        GameManager.Instance.GameStateModel.TransitionTo(GameState.Paused);
+        menuPause.OnActive();
+    
+    }
+
+
+}
+
+
+public struct OnSelection: IEvent
+{
+    
 }

@@ -74,7 +74,7 @@ public class GameStateModel
 
     public void RemovePieceFromBatch(int index)
     {
-        if (index < 0 || index >= 3)
+        if (index < 0 || index >= batchPieces.Count)
         {
             Debug.Log("INDEX IS OUT OF BOUND OF BATCH");
             return;
@@ -82,7 +82,7 @@ public class GameStateModel
 
         batchPieces[index] = null;
         bool isBatchEmpty = true;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < batchPieces.Count; i++)
         {
             if (batchPieces[i] != null)
             {
@@ -94,6 +94,12 @@ public class GameStateModel
         if (isBatchEmpty)
         {
             batchPieces.Clear();
+
+            if (bagPiece == null || bagPiece.Count < 3)
+            {
+                ResetBagPiece(GameManager.Instance.PieceDatas, GameManager.Instance.DifficultyConfig);
+            }
+
             PieceSpawner.SpawnNewBatch(this, GameManager.Instance.GridController, bagPiece);
         }
 

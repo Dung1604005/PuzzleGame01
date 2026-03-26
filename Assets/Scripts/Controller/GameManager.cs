@@ -54,7 +54,7 @@ public class GameManager : Singleton<GameManager>
     public void OnEnable()
     {
         EventBus.Instance.Subscribe<OnPiecePlaced>(OnPiecePlacedEvent);
-        // EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateDifficulty);
+        EventBus.Instance.Subscribe<OnScoreUpdated>(UpdateDifficulty);
     }
 
     public void OnDisable()
@@ -74,60 +74,69 @@ public class GameManager : Singleton<GameManager>
         _gridController.Init(_gridModel, _scoreModel, _gameStateModel);
 
         _gameStateModel.ResetBagPiece(pieceDatas, difficultyConfig);
-        
+
         PieceSpawner.SpawnNewBatch(_gameStateModel, _gridController, _gameStateModel.BagPiece);
 
-        EventBus.Instance.Publish(new OnChangeTheme{});
+        EventBus.Instance.Publish(new OnChangeTheme { });
     }
 
+    public void ContinueGame()
+    {
+        _gameStateModel.TransitionTo(GameState.Playing);
+    }
     public void GameOver()
     {
         _gameStateModel.TransitionTo(GameState.GameOver);
+        EventBus.Instance.Publish(new OnGameOver
+        {
+            CurrentScore = ScoreModel.CurrentScore
+        });
         // Sau phai luu HighScore + trang thai gameStateModel
     }
 
     public void RestartGame()
     {
-        _gridModel.Clear();
+
         _gameStateModel.TransitionTo(GameState.Playing);
         _gameStateModel.ResetBagPiece(pieceDatas, difficultyConfig);
         PieceSpawner.SpawnNewBatch(_gameStateModel, _gridController, pieceDatas);
         _scoreModel.Reset();
-    
+        _gridModel.Clear();
+
     }
 
     public void UpdateDifficulty(OnScoreUpdated onScoreUpdated)
     {
-        if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_EASY)
+        if (onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_EASY)
         {
             ChangeTheme(LevelDifficulty.EASY, themeDataList[0]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.EASY);
-            
+
         }
-        else if(onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_NORMAL)
+        else if (onScoreUpdated.CurrentScore < GameConfig.SCORED_MILESTONES_NORMAL)
         {
             ChangeTheme(LevelDifficulty.NORMAL, themeDataList[1]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.NORMAL);
-           
+
         }
         else
         {
             ChangeTheme(LevelDifficulty.HARD, themeDataList[2]);
             _gameStateModel.ChangeDifficulty(LevelDifficulty.HARD);
-            
+
         }
     }
 
     public void ChangeTheme(LevelDifficulty targetDifficulty, ThemeData _themeData)
     {
-        if(targetDifficulty == _gameStateModel.CurrentLevelDifficulty)
+        if (targetDifficulty == _gameStateModel.CurrentLevelDifficulty)
         {
             return;
         }
         else
         {
             themeData = _themeData;
-            EventBus.Instance.Publish(new OnChangeTheme{});
+            EventBus.Instance.Publish(new OnChangeTheme { });
         }
     }
     public void OnPiecePlacedEvent(OnPiecePlaced onPiecePlaced)
@@ -139,15 +148,29 @@ public class GameManager : Singleton<GameManager>
         }
     } // Sau khi đặt: CheckClear → check GameOver → spawn mới
 
-    
+
 
     void Start()
     {
         StartGame();
+
+        if (SaveManager.Instance.HasSave())
+        {
+            SaveManager.Instance.LoadSavedGame();
+            if (_gridController.IsGameOver())
+            {
+                GameOver();
+            }
+        }
     }
 
-    
-    
 
 
+
+
+}
+
+public struct OnGameOver : IEvent
+{
+    public int CurrentScore;
 }
